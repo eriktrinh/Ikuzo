@@ -1,7 +1,8 @@
-package com.eriktrinh.ikuzo.oauth
+package com.eriktrinh.ikuzo.web
 
 import android.content.Context
-import com.eriktrinh.ikuzo.web.ServiceGenerator
+import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.utils.AuthUtils
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
@@ -15,7 +16,7 @@ class TokenAuthenticator(val context: Context) : Authenticator {
             val refreshCall: Call<Tokens> = ServiceGenerator.createService(AuthService::class.java).accessTokenByRefresh(refreshToken)
             val refreshResponse = refreshCall.execute()
             if (refreshResponse.raw().code() == 200) {
-                val accessToken = "Bearer ${refreshResponse.body().accessToken}"
+                val accessToken = "Bearer ${refreshResponse.body().accessToken?.trim()}"
                 AuthUtils.setAccessToken(context, accessToken)
 
                 return response.request().newBuilder()
@@ -23,6 +24,7 @@ class TokenAuthenticator(val context: Context) : Authenticator {
                         .build()
             }
         }
+        AuthUtils.setRefreshToken(context, null)
         return null
     }
 }

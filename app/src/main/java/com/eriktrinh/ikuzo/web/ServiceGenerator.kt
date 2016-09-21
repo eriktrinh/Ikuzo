@@ -1,7 +1,7 @@
 package com.eriktrinh.ikuzo.web
 
 import android.content.Context
-import com.eriktrinh.ikuzo.oauth.TokenAuthenticator
+import com.eriktrinh.ikuzo.utils.AuthUtils
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,15 +13,22 @@ object ServiceGenerator {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
 
-    fun <T> createService(serviceClass: Class<T>, context: Context, authToken: String): T {
+    fun <T> createService(serviceClass: Class<T>, context: Context): T {
+        if (httpClient.interceptors().isEmpty()) {
             httpClient.addInterceptor { chain ->
+                val authToken = AuthUtils.getAccessToken(context)
                 val original = chain.request()
-                val requestBuilder = original.newBuilder()
-                        .addHeader("Authorization", authToken)
-                        .method(original.method(), original.body())
+                if (authToken == null) {
+                    chain.proceed(original)
+                } else {
+                    val requestBuilder = original.newBuilder()
+                            .addHeader("Authorization", authToken)
+                            .method(original.method(), original.body())
 
-                chain.proceed(requestBuilder.build())
+                    chain.proceed(requestBuilder.build())
+                }
             }
+        }
         httpClient.authenticator(TokenAuthenticator(context))
 
         val client = httpClient.build()
@@ -31,6 +38,7 @@ object ServiceGenerator {
     }
 
     fun <T> createService(serviceClass: Class<T>): T {
+        httpClient.interceptors().removeAll { true }
         val client = httpClient.build()
         val retrofit = builder.client(client)
                 .build()

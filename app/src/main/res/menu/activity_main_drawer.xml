@@ -3,9 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_browse"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Browse" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
@@ -33,4 +33,8 @@
         </menu>
     </item>
 
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_menu_logout"
+        android:title="Logout" />
 </menu>
