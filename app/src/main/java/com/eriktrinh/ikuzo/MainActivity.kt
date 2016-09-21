@@ -14,10 +14,13 @@ import android.view.MenuItem
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.eriktrinh.ikuzo.oauth.AuthUtils
+import com.eriktrinh.ikuzo.utils.AuthUtils
+import com.eriktrinh.ikuzo.utils.MeUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener {
@@ -44,19 +47,31 @@ class MainActivity : AppCompatActivity(),
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
+
         toggle.syncState()
-
-        router = Conductor.attachRouter(this, content_main, savedInstanceState)
-        if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(SeriesViewController()))
-
-            if (!AuthUtils.isAuthorized(this)) {
-                val i = LoginActivity.newIntent(this)
-                startActivityForResult(i, REQUEST_LOGIN)
-            }
-        }
-
         nav_view.setNavigationItemSelectedListener(this)
+        router = Conductor.attachRouter(this, content_main, savedInstanceState)
+
+        reinitHeaderAndControllers()
+    }
+
+    private fun setNavHeaderTitle(title: String) {
+        val navHeader = drawer_layout.nav_view.getHeaderView(0)
+        navHeader.nav_header_title.text = title
+        navHeader.invalidate()
+    }
+
+    private fun reinitHeaderAndControllers() {
+        setNavHeaderTitle(MeUtils.getMyDisplayName(this) ?: "Login")
+
+        router.setRoot(RouterTransaction.with(SeriesViewController()))
+        drawer_layout.nav_view.setCheckedItem(R.id.nav_browse)
+        if (!AuthUtils.isAuthorized(this)) {
+            showUnauthenticatedScreen()
+            showLogin()
+        } else {
+//            AuthUtils.setMe(this, { recreate() }, { showLogin() })
+        }
     }
 
     override fun onBackPressed() {
@@ -92,8 +107,16 @@ class MainActivity : AppCompatActivity(),
     @SuppressWarnings("StatementWithEmptyBody")
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+
+        if(!AuthUtils.isAuthorized(this)) {
+            return true
+        }
+        val drawer = drawer_layout
         when (item.itemId) {
-            R.id.nav_camera -> {
+            R.id.nav_browse -> {
+                if (!item.isChecked) {
+                    router.setRoot(RouterTransaction.with(SeriesViewController()))
+                }
             }
             R.id.nav_slideshow -> {
             }
@@ -103,9 +126,13 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.nav_send -> {
             }
+            R.id.nav_logout -> {
+                AuthUtils.clearPreferences(this)
+                showUnauthenticatedScreen()
+                showLogin()
+            }
         }
 
-        val drawer = drawer_layout
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -115,13 +142,23 @@ class MainActivity : AppCompatActivity(),
             Log.i(TAG, "onActivityResult Cancelled")
             return
         }
-        when(requestCode) {
+        when (requestCode) {
             REQUEST_LOGIN -> {
                 Log.i(TAG, "LoginActivity OK")
-                router.popToRoot()
-                recreate()
+                router.setRoot(RouterTransaction.with(SeriesViewController()))
+                AuthUtils.setMe(this, { reinitHeaderAndControllers() }, { AuthUtils.clearPreferences(this); showUnauthenticatedScreen(); showLogin() })
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun showUnauthenticatedScreen() {
+        drawer_layout.closeDrawer(GravityCompat.START)
+        router.setRoot(RouterTransaction.with(UnauthenticatedViewController()))
+    }
+
+    private fun showLogin() {
+        val i = LoginActivity.newIntent(this)
+        startActivityForResult(i, REQUEST_LOGIN)
     }
 }

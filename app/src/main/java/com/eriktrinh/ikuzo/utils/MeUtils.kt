@@ -1,0 +1,33 @@
+package com.eriktrinh.ikuzo.utils
+
+import android.content.Context
+import android.preference.PreferenceManager
+
+object MeUtils {
+    private val KEY_USER_ID = "MeUtils.KEY_USER_ID"
+    private val KEY_DISPLAY_NAME = "MeUtils.KEY_DISPLAY_NAME"
+
+    fun getMyId(context: Context): Int? {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(KEY_USER_ID, -1)
+    }
+
+    fun getMyDisplayName(context: Context): String? {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(KEY_DISPLAY_NAME, null)
+    }
+
+    fun setMyId(context: Context, id: Int?) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putInt(KEY_USER_ID, id ?: -1)
+                .commit()
+    }
+
+    fun setMyDisplayName(context: Context, name: String?) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putString(KEY_DISPLAY_NAME, name)
+                .commit()
+    }
+}

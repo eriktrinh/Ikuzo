@@ -10,9 +10,8 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.ProgressBar
 import com.bluelinelabs.conductor.Controller
-import com.eriktrinh.ikuzo.oauth.AuthCallbacks
-import com.eriktrinh.ikuzo.oauth.AuthService
-import com.eriktrinh.ikuzo.oauth.Tokens
+import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.controller_login_view.view.*
 import retrofit2.Call
@@ -20,7 +19,6 @@ import retrofit2.Call
 class LoginViewController(args: Bundle?) : Controller(args) {
 
     lateinit var webView: WebView
-    private lateinit var progressBar: ProgressBar
     private lateinit var uri: Uri
 
     companion object {
@@ -43,9 +41,6 @@ class LoginViewController(args: Bundle?) : Controller(args) {
         val view = inflater.inflate(R.layout.controller_login_view, container, false)
 
         webView = view.controller_login_web_view
-        progressBar = view.controller_login_progress_bar
-
-        progressBar.max = 100
 
         @Suppress webView.settings.javaScriptEnabled = true
         webView.setWebChromeClient(object : WebChromeClient() {

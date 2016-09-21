@@ -9,8 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.eriktrinh.ikuzo.oauth.AuthCallbacks
-import com.eriktrinh.ikuzo.oauth.AuthService
+import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.activity_login.*
 

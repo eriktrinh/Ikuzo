@@ -9,7 +9,6 @@ import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.domain.Anime
 import com.eriktrinh.ikuzo.domain.Series
-import com.eriktrinh.ikuzo.oauth.AuthUtils
 import com.eriktrinh.ikuzo.web.BrowseService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.squareup.picasso.Picasso
@@ -19,13 +18,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SeriesViewController : Controller(), Callback<List<Anime>> {
+class SeriesViewController : Controller() {
     private lateinit var adapter: SeriesAdapter
+    private lateinit var browseService: BrowseService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_view, container, false)
 
-        // TODO Fix RecyclerView margins / parent padding
         val recyclerView = view.controller_series_recycler_view
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
@@ -33,9 +32,19 @@ class SeriesViewController : Controller(), Callback<List<Anime>> {
         adapter = SeriesAdapter(emptyList())
         recyclerView.adapter = adapter
 
-        // TODO Handle initial null accessToken
-        val call = ServiceGenerator.createService(BrowseService::class.java, activity, AuthUtils.getAccessToken(activity) ?: "").testBrowse()
-        call.enqueue(this)
+        browseService = ServiceGenerator.createService(BrowseService::class.java, activity)
+        val call = browseService.browseAnime()
+        call.enqueue(object : Callback<List<Anime>> {
+            override fun onFailure(call: Call<List<Anime>>?, t: Throwable?) {
+                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
+                when (response?.raw()?.code() ?: 400) { // TODO Handle case where user has not auth'd yet
+                    200 -> adapter.addItems(response?.body() ?: emptyList())
+                }
+            }
+        })
         return view
     }
 
@@ -49,6 +58,7 @@ class SeriesViewController : Controller(), Callback<List<Anime>> {
         private val imageView = itemView.series_image
         private val englishTitleText = itemView.series_english_name
         private val statusText = itemView.series_status
+
         fun bindItem(series: Series) {
             if (series is Anime) {
                 Picasso.with(activity)
@@ -86,6 +96,9 @@ class SeriesViewController : Controller(), Callback<List<Anime>> {
             series = series.plus(items)
             for (i in 0..items.size - 1) {
                 notifyItemInserted(oldSize + i)
+                Picasso.with(activity)
+                        .load((items[i] as Anime).imageUrl)
+                        .fetch()
             }
         }
 
@@ -93,16 +106,6 @@ class SeriesViewController : Controller(), Callback<List<Anime>> {
             val oldSize = series.size
             notifyItemRangeRemoved(0, oldSize)
             series = emptyList()
-        }
-    }
-
-    override fun onFailure(call: Call<List<Anime>>?, t: Throwable?) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
-        when (response?.raw()?.code() ?: 400) { // TODO Handle case where user has not auth'd yet
-            200 -> adapter.addItems(response?.body() ?: emptyList())
         }
     }
 }

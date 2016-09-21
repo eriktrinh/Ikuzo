@@ -1,7 +1,9 @@
-package com.eriktrinh.ikuzo.oauth
+package com.eriktrinh.ikuzo
 
 import android.content.Context
 import android.util.Log
+import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.utils.AuthUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,18 +14,18 @@ class AuthCallbacks(val context: Context, val callbacks: Callbacks) : Callback<T
         fun onAuthenticated()
         fun onAuthenticationFailure()
     }
+
     private val TAG = "AuthCallbacks"
 
     override fun onResponse(call: Call<Tokens>, response: Response<Tokens>?) {
         val tokens: Tokens? = response?.body()
         if (isValidTokenResponse(tokens)) {
-            AuthUtils.setAccessToken(context, "Bearer ${tokens?.accessToken}")
+            AuthUtils.setAccessToken(context, "Bearer ${tokens?.accessToken?.trim()}")
             Log.i(TAG, "Got access_token: ${tokens?.accessToken}")
 
             if (tokens?.refreshToken != null) {
-                AuthUtils.setRefreshToken(context, tokens?.refreshToken)
+                AuthUtils.setRefreshToken(context, tokens?.refreshToken.trim())
             }
-
             callbacks.onAuthenticated()
         } else {
             callbacks.onAuthenticationFailure()
@@ -31,7 +33,7 @@ class AuthCallbacks(val context: Context, val callbacks: Callbacks) : Callback<T
     }
 
     override fun onFailure(call: Call<Tokens>, t: Throwable) {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        callbacks.onAuthenticationFailure()
     }
 
 

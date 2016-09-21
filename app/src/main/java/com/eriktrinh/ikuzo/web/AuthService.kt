@@ -1,5 +1,6 @@
-package com.eriktrinh.ikuzo.oauth
+package com.eriktrinh.ikuzo.web
 
+import com.eriktrinh.ikuzo.domain.Tokens
 import retrofit2.Call
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -10,9 +11,6 @@ interface AuthService {
         private const val CLIENT_SECRET = "57pETV0LMBQApEDJL6oIGWkR338QC"
         const val REDIRECT_URI = "com.eriktrinh.ikuzo"
     }
-    // Show webview pointing to https://anilist.co/api/auth/authorize?client_id=burning47-3s3qj&redirect_uri=com.eriktrinh.ikuzo&response_type=code
-    //                          https://anilist.co/api/auth/authorize?client_id=burning47-3s3qj&redirect_uri=com.eriktrinh.ikuzo&response_type=code
-    // then:
 
     @POST("auth/access_token?" +
             "grant_type=authorization_code&" +

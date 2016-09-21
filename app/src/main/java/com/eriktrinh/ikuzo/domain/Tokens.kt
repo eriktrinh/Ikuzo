@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.oauth
+package com.eriktrinh.ikuzo.domain
 
 import com.google.gson.annotations.SerializedName
 
