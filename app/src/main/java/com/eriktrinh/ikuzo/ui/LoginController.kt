@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo
+package com.eriktrinh.ikuzo.ui
 
 import android.net.Uri
 import android.os.Bundle
@@ -8,30 +8,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
-import android.widget.ProgressBar
 import com.bluelinelabs.conductor.Controller
+import com.eriktrinh.ikuzo.AuthCallbacks
+import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.domain.Tokens
 import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.controller_login_view.view.*
 import retrofit2.Call
 
-class LoginViewController(args: Bundle?) : Controller(args) {
+class LoginController(args: Bundle?) : Controller(args) {
 
-    lateinit var webView: WebView
-    private lateinit var uri: Uri
 
     companion object {
-        private val KEY_URI = "URI"
-        private val TAG = "LoginViewController"
+        private val KEY_URI = "ARGS_URI"
+        private val TAG = "LoginController"
 
-        fun Bundle.putUri(uri: Uri): Bundle {
+        private fun Bundle.putUri(uri: Uri): Bundle {
             putParcelable(KEY_URI, uri)
             return this
         }
     }
 
     constructor(uri: Uri) : this(Bundle().putUri(uri))
+
+    lateinit var webView: WebView
+    private var uri: Uri
 
     init {
         uri = args?.getParcelable(KEY_URI) ?: Uri.EMPTY
@@ -64,7 +66,8 @@ class LoginViewController(args: Bundle?) : Controller(args) {
         })
         webView.settings.cacheMode = WebSettings.LOAD_DEFAULT
         webView.settings.domStorageEnabled = true
-        webView.loadUrl(uri.toString())
+        webView.settings.saveFormData = false
+        CookieManager.getInstance().removeAllCookies { webView.loadUrl(uri.toString()) }
 
         return view
     }

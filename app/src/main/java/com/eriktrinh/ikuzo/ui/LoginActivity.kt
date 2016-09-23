@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo
+package com.eriktrinh.ikuzo.ui
 
 import android.app.Activity
 import android.content.Context
@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.eriktrinh.ikuzo.AuthCallbacks
+import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.activity_login.*
@@ -46,7 +48,7 @@ class LoginActivity : AppCompatActivity(), AuthCallbacks.Callbacks {
 
         router = Conductor.attachRouter(this, controller_container, savedInstanceState)
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(LoginViewController(uri)))
+            router.setRoot(RouterTransaction.with(LoginController(uri)))
         }
     }
 
