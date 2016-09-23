@@ -20,7 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".ui.LoginActivity" />
+        <activity
+            android:name=".ui.SeriesDetailActivity"
+            android:label="@string/title_activity_series_detail"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

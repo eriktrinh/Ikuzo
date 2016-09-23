@@ -14,6 +14,9 @@ import android.view.MenuItem
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.eriktrinh.ikuzo.ui.LoginActivity
+import com.eriktrinh.ikuzo.ui.SeriesController
+import com.eriktrinh.ikuzo.ui.UnauthenticatedController
 import com.eriktrinh.ikuzo.utils.AuthUtils
 import com.eriktrinh.ikuzo.utils.MeUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -64,7 +67,7 @@ class MainActivity : AppCompatActivity(),
     private fun reinitHeaderAndControllers() {
         setNavHeaderTitle(MeUtils.getMyDisplayName(this) ?: "Login")
 
-        router.setRoot(RouterTransaction.with(SeriesViewController()))
+        router.setRoot(RouterTransaction.with(SeriesController()))
         drawer_layout.nav_view.setCheckedItem(R.id.nav_browse)
         if (!AuthUtils.isAuthorized(this)) {
             showUnauthenticatedScreen()
@@ -115,7 +118,7 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.nav_browse -> {
                 if (!item.isChecked) {
-                    router.setRoot(RouterTransaction.with(SeriesViewController()))
+                    router.setRoot(RouterTransaction.with(SeriesController()))
                 }
             }
             R.id.nav_slideshow -> {
@@ -145,7 +148,7 @@ class MainActivity : AppCompatActivity(),
         when (requestCode) {
             REQUEST_LOGIN -> {
                 Log.i(TAG, "LoginActivity OK")
-                router.setRoot(RouterTransaction.with(SeriesViewController()))
+                router.setRoot(RouterTransaction.with(SeriesController()))
                 AuthUtils.setMe(this, { reinitHeaderAndControllers() }, { AuthUtils.clearPreferences(this); showUnauthenticatedScreen(); showLogin() })
             }
         }
@@ -154,7 +157,7 @@ class MainActivity : AppCompatActivity(),
 
     fun showUnauthenticatedScreen() {
         drawer_layout.closeDrawer(GravityCompat.START)
-        router.setRoot(RouterTransaction.with(UnauthenticatedViewController()))
+        router.setRoot(RouterTransaction.with(UnauthenticatedController()))
     }
 
     private fun showLogin() {

@@ -1,12 +1,15 @@
-package com.eriktrinh.ikuzo
+package com.eriktrinh.ikuzo.ui
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
+import com.eriktrinh.ikuzo.R
+import com.eriktrinh.ikuzo.SeriesLab
 import com.eriktrinh.ikuzo.domain.Anime
 import com.eriktrinh.ikuzo.domain.Series
 import com.eriktrinh.ikuzo.web.BrowseService
@@ -18,7 +21,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SeriesViewController : Controller() {
+class SeriesController : Controller() {
+    companion object {
+        private val TAG = "SeriesController"
+    }
+
     private lateinit var adapter: SeriesAdapter
     private lateinit var browseService: BrowseService
 
@@ -41,7 +48,12 @@ class SeriesViewController : Controller() {
 
             override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
                 when (response?.raw()?.code() ?: 400) { // TODO Handle case where user has not auth'd yet
-                    200 -> adapter.addItems(response?.body() ?: emptyList())
+                    200 -> {
+                        val series: List<Series> = response?.body() ?: emptyList()
+                        val seriesLab = SeriesLab.get(activity)
+                        series.forEach { seriesLab.put(it) }
+                        adapter.addItems(series)
+                    }
                 }
             }
         })
@@ -54,12 +66,18 @@ class SeriesViewController : Controller() {
                 .into(target)
     }
 
-    inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val imageView = itemView.series_image
         private val englishTitleText = itemView.series_english_name
         private val statusText = itemView.series_status
+        private lateinit var series: Series
+
+        init {
+            itemView.setOnClickListener(this)
+        }
 
         fun bindItem(series: Series) {
+            this.series = series
             if (series is Anime) {
                 Picasso.with(activity)
                         .loadInto(series.imageUrl, imageView)
@@ -67,9 +85,15 @@ class SeriesViewController : Controller() {
                 statusText.text = series.airingStatus
             }
         }
+
+        override fun onClick(view: View) {
+            startActivity(SeriesDetailActivity.newIntent(activity, (series as Anime).id))
+            Log.i(TAG, "${(series as Anime).titleEnglish} clicked")
+        }
     }
 
     inner private class SeriesAdapter(series: List<Series>) : RecyclerView.Adapter<SeriesHolder>() {
+
         private lateinit var series: List<Series>
 
         init {
