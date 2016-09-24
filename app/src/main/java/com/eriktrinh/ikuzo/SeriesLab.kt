@@ -2,10 +2,9 @@ package com.eriktrinh.ikuzo
 
 import android.content.Context
 import com.eriktrinh.ikuzo.domain.Anime
-import com.eriktrinh.ikuzo.domain.Series
 import java.util.*
 
-class SeriesLab private constructor(private val context: Context) : HashMap<Int, Series>() {
+class SeriesLab private constructor(private val context: Context) : HashMap<Int, Anime>() {
     companion object {
         private var seriesLab: SeriesLab? = null
 
@@ -17,7 +16,7 @@ class SeriesLab private constructor(private val context: Context) : HashMap<Int,
         }
     }
 
-    fun put(series: Series) {
-        this.put((series as Anime).id, series)
+    fun put(anime: Anime) {
+        this.put(anime.id, anime)
     }
 }
