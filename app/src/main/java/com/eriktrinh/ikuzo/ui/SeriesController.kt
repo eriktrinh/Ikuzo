@@ -6,13 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.SeriesLab
 import com.eriktrinh.ikuzo.domain.Anime
-import com.eriktrinh.ikuzo.domain.Series
-import com.eriktrinh.ikuzo.web.BrowseService
+import com.eriktrinh.ikuzo.ext.loadInto
+import com.eriktrinh.ikuzo.web.SeriesService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.controller_series_view.view.*
@@ -27,7 +26,7 @@ class SeriesController : Controller() {
     }
 
     private lateinit var adapter: SeriesAdapter
-    private lateinit var browseService: BrowseService
+    private lateinit var seriesService: SeriesService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_view, container, false)
@@ -39,17 +38,17 @@ class SeriesController : Controller() {
         adapter = SeriesAdapter(emptyList())
         recyclerView.adapter = adapter
 
-        browseService = ServiceGenerator.createService(BrowseService::class.java, activity)
-        val call = browseService.browseAnime()
+        seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
+        val call = seriesService.browseAnime()
         call.enqueue(object : Callback<List<Anime>> {
-            override fun onFailure(call: Call<List<Anime>>?, t: Throwable?) {
+            override fun onFailure(call: Call<List<Anime>>, t: Throwable?) {
                 throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
-                when (response?.raw()?.code() ?: 400) { // TODO Handle case where user has not auth'd yet
+                when (response?.raw()?.code() ?: 400) {
                     200 -> {
-                        val series: List<Series> = response?.body() ?: emptyList()
+                        val series: List<Anime> = response?.body() ?: emptyList()
                         val seriesLab = SeriesLab.get(activity)
                         series.forEach { seriesLab.put(it) }
                         adapter.addItems(series)
@@ -60,41 +59,32 @@ class SeriesController : Controller() {
         return view
     }
 
-    private fun Picasso.loadInto(url: String?, target: ImageView) {
-        this.load(url)
-                .noFade()
-                .into(target)
-    }
-
     inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val imageView = itemView.series_image
         private val englishTitleText = itemView.series_english_name
         private val statusText = itemView.series_status
-        private lateinit var series: Series
+        private lateinit var anime: Anime
 
         init {
             itemView.setOnClickListener(this)
         }
 
-        fun bindItem(series: Series) {
-            this.series = series
-            if (series is Anime) {
-                Picasso.with(activity)
-                        .loadInto(series.imageUrl, imageView)
-                englishTitleText.text = series.titleEnglish
-                statusText.text = series.airingStatus
-            }
+        fun bindItem(anime: Anime) {
+            this.anime = anime
+            Picasso.with(activity)
+                    .loadInto(anime.imageUrl, imageView)
+            englishTitleText.text = anime.titleEnglish
+            statusText.text = anime.airingStatus
         }
 
         override fun onClick(view: View) {
-            startActivity(SeriesDetailActivity.newIntent(activity, (series as Anime).id))
-            Log.i(TAG, "${(series as Anime).titleEnglish} clicked")
+            startActivity(SeriesDetailActivity.newIntent(activity, anime.id))
+            Log.i(TAG, "$anime.titleEnglish} clicked")
         }
     }
 
-    inner private class SeriesAdapter(series: List<Series>) : RecyclerView.Adapter<SeriesHolder>() {
-
-        private lateinit var series: List<Series>
+    inner private class SeriesAdapter(series: List<Anime>) : RecyclerView.Adapter<SeriesHolder>() {
+        private lateinit var series: List<Anime>
 
         init {
             this.series = series
@@ -115,13 +105,13 @@ class SeriesController : Controller() {
             return series.size
         }
 
-        fun addItems(items: List<Series>) {
+        fun addItems(items: List<Anime>) {
             val oldSize = series.size
             series = series.plus(items)
             for (i in 0..items.size - 1) {
                 notifyItemInserted(oldSize + i)
                 Picasso.with(activity)
-                        .load((items[i] as Anime).imageUrl)
+                        .load(items[i].imageUrl)
                         .fetch()
             }
         }

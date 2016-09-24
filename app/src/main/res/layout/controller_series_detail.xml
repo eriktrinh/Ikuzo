@@ -8,8 +8,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.eriktrinh.ikuzo.SeriesDetailController"
+    tools:context="com.eriktrinh.ikuzo.ui.SeriesDetailController"
     tools:showIn="@layout/activity_series_detail">
 
+    <ImageView
+        android:id="@+id/series_detail_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="16dp"
+        tools:layout_height="305dp"
+        tools:layout_width="255dp" />
 
 </RelativeLayout>
