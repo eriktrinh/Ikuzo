@@ -17,9 +17,9 @@
             android:id="@+id/series_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             tools:background="@color/colorAccent"
             tools:layout_height="305px"
             tools:layout_width="255px" />
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_toRightOf="@id/series_image"
+            android:layout_toEndOf="@id/series_image"
             android:textSize="18sp"
             tools:text="English Name" />
 
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/series_english_name"
-            android:layout_toRightOf="@id/series_image"
+            android:layout_toEndOf="@id/series_image"
             tools:text="Status" />
 
     </RelativeLayout>
