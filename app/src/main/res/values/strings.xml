@@ -11,4 +11,11 @@
     <string name="title_activity_series_detail">SeriesDetailActivity</string>
     <string name="character_title">Characters</string>
     <string name="description_title">Description</string>
+    <string name="browse_title">Browse</string>
+    <string name="browse_year">Year</string>
+    <string name="browse_season">Season</string>
+    <string name="browse_sort">Sort</string>
+    <string name="browse_type">Type</string>
+    <string name="browse_status">Status</string>
+    <string name="browse_desc">Descending</string>
 </resources>

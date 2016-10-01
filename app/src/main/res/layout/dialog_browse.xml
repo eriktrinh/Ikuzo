@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/activity_vertical_margin">
+
+    <TextView
+        android:id="@+id/browse_year_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_year" />
+
+    <Spinner
+        android:id="@+id/browse_year_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/browse_year_text" />
+
+    <TextView
+        android:id="@+id/browse_season_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/browse_year_spinner"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_season" />
+
+    <Spinner
+        android:id="@+id/browse_season_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/browse_year_spinner"
+        android:layout_toEndOf="@id/browse_season_text" />
+
+    <TextView
+        android:id="@+id/browse_status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/browse_season_spinner"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_status" />
+
+    <Spinner
+        android:id="@+id/browse_status_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/browse_season_spinner"
+        android:layout_toEndOf="@id/browse_status_text" />
+
+    <TextView
+        android:id="@+id/browse_type_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/browse_status_spinner"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_type" />
+
+    <Spinner
+        android:id="@+id/browse_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/browse_status_spinner"
+        android:layout_toEndOf="@id/browse_type_text" />
+
+    <TextView
+        android:id="@+id/browse_sort_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/browse_type_spinner"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_sort" />
+
+    <Spinner
+        android:id="@+id/browse_sort_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/browse_type_spinner"
+        android:layout_toEndOf="@id/browse_sort_text" />
+
+    <TextView
+        android:id="@+id/browse_desc_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/browse_sort_spinner"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/browse_desc" />
+
+    <CheckBox
+        android:id="@+id/browse_desc_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/browse_sort_spinner"
+        android:layout_toEndOf="@id/browse_desc_text" />
+</RelativeLayout>
