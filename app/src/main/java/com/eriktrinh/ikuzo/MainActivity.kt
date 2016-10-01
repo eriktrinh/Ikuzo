@@ -19,6 +19,7 @@ import com.eriktrinh.ikuzo.ui.SeriesController
 import com.eriktrinh.ikuzo.ui.UnauthenticatedController
 import com.eriktrinh.ikuzo.utils.AuthUtils
 import com.eriktrinh.ikuzo.utils.MeUtils
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -64,7 +65,18 @@ class MainActivity : AppCompatActivity(),
         navHeader.invalidate()
     }
 
+    private fun loadUserImage(url: String) {
+        val navHeader = drawer_layout.nav_view.getHeaderView(0)
+        Picasso.with(this)
+                .load(url)
+                .fit()
+                .centerInside()
+                .into(navHeader.imageView)
+    }
+
     private fun reinitHeaderAndControllers() {
+        val imageUrl = MeUtils.getMyImageUrl(this)
+        if (imageUrl != null) loadUserImage(imageUrl)
         setNavHeaderTitle(MeUtils.getMyDisplayName(this) ?: "Login")
 
         router.setRoot(RouterTransaction.with(SeriesController()))
@@ -111,7 +123,7 @@ class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
 
-        if(!AuthUtils.isAuthorized(this)) {
+        if (!AuthUtils.isAuthorized(this)) {
             return true
         }
         val drawer = drawer_layout
