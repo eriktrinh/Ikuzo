@@ -1,11 +1,10 @@
 package com.eriktrinh.ikuzo.ui
 
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.SeriesLab
@@ -20,9 +19,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SeriesController : Controller() {
+class SeriesController : Controller(), BrowseDialogFragment.Delegate {
+
     companion object {
         private val TAG = "SeriesController"
+        private val BROWSER = "SeriesController.BrowseDialog"
     }
 
     private lateinit var adapter: SeriesAdapter
@@ -30,6 +31,8 @@ class SeriesController : Controller() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_view, container, false)
+
+        setHasOptionsMenu(true)
 
         val recyclerView = view.controller_series_recycler_view
         val layoutManager = LinearLayoutManager(activity)
@@ -57,6 +60,23 @@ class SeriesController : Controller() {
             }
         })
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.controller_series_view, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_query_series -> {
+                val dialog = BrowseDialogFragment.newInstance()
+//                dialog.setDelegate(this)
+                dialog.show((activity as AppCompatActivity).supportFragmentManager, BROWSER)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -116,5 +136,9 @@ class SeriesController : Controller() {
             notifyItemRangeRemoved(0, oldSize)
             series = emptyList()
         }
+    }
+
+    override fun onOKPressed() {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
