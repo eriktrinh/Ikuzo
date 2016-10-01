@@ -8,9 +8,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AuthCallbacks(val context: Context, val callbacks: Callbacks) : Callback<Tokens> {
+class AuthCallbacks(val context: Context, val delegate: Delegate) : Callback<Tokens> {
 
-    interface Callbacks {
+    interface Delegate {
         fun onAuthenticated()
         fun onAuthenticationFailure()
     }
@@ -26,14 +26,14 @@ class AuthCallbacks(val context: Context, val callbacks: Callbacks) : Callback<T
             if (tokens?.refreshToken != null) {
                 AuthUtils.setRefreshToken(context, tokens?.refreshToken.trim())
             }
-            callbacks.onAuthenticated()
+            delegate.onAuthenticated()
         } else {
-            callbacks.onAuthenticationFailure()
+            delegate.onAuthenticationFailure()
         }
     }
 
     override fun onFailure(call: Call<Tokens>, t: Throwable) {
-        callbacks.onAuthenticationFailure()
+        delegate.onAuthenticationFailure()
     }
 
 

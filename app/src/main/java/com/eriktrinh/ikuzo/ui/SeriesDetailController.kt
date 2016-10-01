@@ -1,12 +1,14 @@
 package com.eriktrinh.ikuzo.ui
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.design.widget.Snackbar
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.SeriesLab
@@ -35,16 +37,32 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
     private lateinit var series: Anime // TODO Figure out how to handle both anime and manga w/o too much code duplication
     private lateinit var seriesService: SeriesService
     private lateinit var seriesImageView: ImageView
+    private lateinit var characterAdapter: CharacterAdapter
+    private lateinit var descriptionTextView: TextView
+    private lateinit var titleTextView: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_detail, container, false)
         seriesImageView = view.series_detail_image
+        descriptionTextView = view.series_detail_description
+        titleTextView = view.series_detail_title
+
+        view.fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
 
         seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
 
         val id = args.getInt(KEY_ID, -1)
-        series = SeriesLab.get(activity).getOrElse(id) { throw RuntimeException("Series not found") }
-        (activity as AppCompatActivity).supportActionBar?.title = series.titleEnglish
+        series = SeriesLab.getOrElse(id) { throw RuntimeException("Series not found") }
+
+        val recyclerView = view.series_detail_character_recycler
+        val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        characterAdapter = CharacterAdapter(activity, emptyList())
+        recyclerView.adapter = characterAdapter
+        recyclerView.layoutManager = layoutManager
+        recyclerView.addItemDecoration(SpacingItemDecoration(
+                resources.getDimensionPixelSize(R.dimen.design_card_margin),
+                resources.getDimensionPixelSize(R.dimen.activity_horizontal_margin),
+                true))
 
         val call = seriesService.getAnimePage(id)
         call.enqueue(object : Callback<Anime> {
@@ -53,7 +71,7 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
                     200 -> {
                         if (response != null) {
                             series = response.body()
-                            Log.i(TAG, "Got: ${series}")
+                            Log.i(TAG, "Got: $series")
                             updateUI()
                         }
                     }
@@ -71,5 +89,8 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
     private fun updateUI() {
         Picasso.with(activity)
                 .loadInto(series.imageUrl, seriesImageView)
+        characterAdapter.addItems(series.characters ?: emptyList())
+        descriptionTextView.text = series.description?.replace("<br>", "")
+        titleTextView.text = series.titleEnglish
     }
 }

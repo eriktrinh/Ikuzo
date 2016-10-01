@@ -9,4 +9,6 @@
     <string name="password_prompt">Password:</string>
     <string name="login">Login</string>
     <string name="title_activity_series_detail">SeriesDetailActivity</string>
+    <string name="character_title">Characters</string>
+    <string name="description_title">Description</string>
 </resources>
