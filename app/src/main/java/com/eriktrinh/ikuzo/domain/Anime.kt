@@ -26,11 +26,12 @@ data class Anime(val id: Int,
                  @SerializedName("list_stats") val listStats: Map<String, Int>?,
                  val duration: Int?,
                  val source: String?,
+                 val airing: Airing?,
         // Page model extras:
                  val characters: List<Character>?,
                  val studio: List<Studio>?,
                  val externalLinks: List<ExternalLink>?,
-                 val reviews: List<Review>?
+                 val reviews: List<Review>?,
+                 @SerializedName("youtube_id") val youtubeId: String?
 ) {
-
 }

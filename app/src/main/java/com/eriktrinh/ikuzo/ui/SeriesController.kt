@@ -37,6 +37,7 @@ class SeriesController : Controller() {
 
         adapter = SeriesAdapter(emptyList())
         recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.design_card_margin)))
 
         seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
         val call = seriesService.browseAnime()
@@ -49,8 +50,7 @@ class SeriesController : Controller() {
                 when (response?.raw()?.code() ?: 400) {
                     200 -> {
                         val series: List<Anime> = response?.body() ?: emptyList()
-                        val seriesLab = SeriesLab.get(activity)
-                        series.forEach { seriesLab.put(it) }
+                        series.forEach { SeriesLab.put(it) }
                         adapter.addItems(series)
                     }
                 }
@@ -83,12 +83,7 @@ class SeriesController : Controller() {
         }
     }
 
-    inner private class SeriesAdapter(series: List<Anime>) : RecyclerView.Adapter<SeriesHolder>() {
-        private lateinit var series: List<Anime>
-
-        init {
-            this.series = series
-        }
+    inner private class SeriesAdapter(var series: List<Anime>) : RecyclerView.Adapter<SeriesHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeriesHolder {
             val inflater = LayoutInflater.from(activity)
@@ -97,8 +92,8 @@ class SeriesController : Controller() {
             return SeriesHolder(view)
         }
 
-        override fun onBindViewHolder(holder: SeriesHolder?, position: Int) {
-            holder?.bindItem(series[position])
+        override fun onBindViewHolder(holder: SeriesHolder, position: Int) {
+            holder.bindItem(series[position])
         }
 
         override fun getItemCount(): Int {

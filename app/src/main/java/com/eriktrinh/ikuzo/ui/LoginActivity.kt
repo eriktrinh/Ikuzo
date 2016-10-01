@@ -15,7 +15,7 @@ import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginActivity : AppCompatActivity(), AuthCallbacks.Callbacks {
+class LoginActivity : AppCompatActivity(), AuthCallbacks.Delegate {
     override fun onAuthenticationFailure() {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

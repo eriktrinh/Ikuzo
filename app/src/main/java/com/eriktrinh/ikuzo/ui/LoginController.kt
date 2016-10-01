@@ -83,6 +83,6 @@ class LoginController(args: Bundle?) : Controller(args) {
     private fun setTokens(code: String) {
         val authService: AuthService = ServiceGenerator.createService(AuthService::class.java)
         val call: Call<Tokens> = authService.accessTokenByCode(code)
-        call.enqueue(AuthCallbacks(activity, activity as AuthCallbacks.Callbacks))
+        call.enqueue(AuthCallbacks(activity, activity as AuthCallbacks.Delegate))
     }
 }
