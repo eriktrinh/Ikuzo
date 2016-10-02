@@ -14,6 +14,7 @@ import android.view.MenuItem
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.eriktrinh.ikuzo.ext.loadAndCenterInto
 import com.eriktrinh.ikuzo.ui.LoginActivity
 import com.eriktrinh.ikuzo.ui.SeriesController
 import com.eriktrinh.ikuzo.ui.UnauthenticatedController
@@ -68,10 +69,7 @@ class MainActivity : AppCompatActivity(),
     private fun loadUserImage(url: String) {
         val navHeader = drawer_layout.nav_view.getHeaderView(0)
         Picasso.with(this)
-                .load(url)
-                .fit()
-                .centerInside()
-                .into(navHeader.imageView)
+                .loadAndCenterInto(url, navHeader.imageView)
     }
 
     private fun reinitHeaderAndControllers() {

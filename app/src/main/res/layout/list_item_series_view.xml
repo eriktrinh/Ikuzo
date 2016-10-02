@@ -15,32 +15,84 @@
 
         <ImageView
             android:id="@+id/series_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="89dp"
+            android:layout_height="120dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            tools:background="@color/colorAccent"
-            tools:layout_height="305px"
-            tools:layout_width="255px" />
+            tools:background="@color/colorAccent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/series_image"
+            android:background="@color/cardview_shadow_end_color" />
 
         <TextView
             android:id="@+id/series_english_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/series_image"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:gravity="center_horizontal"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="English Name" />
+
+        <TextView
+            android:id="@+id/series_left_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_toEndOf="@id/series_image"
-            android:textSize="18sp"
-            tools:text="English Name" />
+            tools:text="left" />
+
+        <TextView
+            android:id="@+id/series_center_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/series_left_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@id/series_image"
+            android:gravity="center_horizontal"
+            tools:text="center" />
+
+        <TextView
+            android:id="@+id/series_right_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/series_left_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            tools:text="right" />
 
         <TextView
             android:id="@+id/series_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/series_english_name"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/series_left_text"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_toEndOf="@id/series_image"
-            tools:text="Status" />
+            android:gravity="center_horizontal"
+            tools:text="Status (Num eps)" />
 
+        <TextView
+            android:id="@+id/series_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/series_status"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_toEndOf="@id/series_image"
+            android:gravity="center_horizontal"
+            tools:text="Episode # in..." />
     </RelativeLayout>
 </android.support.v7.widget.CardView>
