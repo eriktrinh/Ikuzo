@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.SeriesLab
+import com.eriktrinh.ikuzo.domain.Airing
 import com.eriktrinh.ikuzo.domain.Anime
-import com.eriktrinh.ikuzo.ext.loadInto
+import com.eriktrinh.ikuzo.ext.loadAndCropInto
+import com.eriktrinh.ikuzo.utils.CalendarUtils
 import com.eriktrinh.ikuzo.web.SeriesService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.squareup.picasso.Picasso
@@ -63,6 +65,10 @@ class SeriesController : Controller() {
         private val imageView = itemView.series_image
         private val englishTitleText = itemView.series_english_name
         private val statusText = itemView.series_status
+        private val topLeftText = itemView.series_left_text
+        private val topCenterText = itemView.series_center_text
+        private val topRightText = itemView.series_right_text
+        private val countdownText = itemView.series_countdown
         private lateinit var anime: Anime
 
         init {
@@ -72,9 +78,13 @@ class SeriesController : Controller() {
         fun bindItem(anime: Anime) {
             this.anime = anime
             Picasso.with(activity)
-                    .loadInto(anime.imageUrl, imageView)
+                    .loadAndCropInto(anime.imageUrl, imageView)
             englishTitleText.text = anime.titleEnglish
-            statusText.text = anime.airingStatus
+            statusText.text = anime.formatStatusText()
+            topLeftText.text = anime.formatLeftText()
+            topCenterText.text = anime.formatCenterText()
+            topRightText.text = anime.formatRightText()
+            countdownText.text = anime.airing?.formatCountdown() ?: ""
         }
 
         override fun onClick(view: View) {
@@ -116,5 +126,34 @@ class SeriesController : Controller() {
             notifyItemRangeRemoved(0, oldSize)
             series = emptyList()
         }
+    }
+
+    private fun Airing.formatCountdown(): String {
+        val hours = (countdown / (60 * 60)) % 24
+        val days = (countdown / (60 * 60)) / 24
+        return "Ep $nextEpisode in ${if (days != 0) "${days}d" else ""} ${hours}h"
+    }
+
+    private fun Anime.formatLeftText(): String {
+        return "$type ($totalEpisodes eps)"
+    }
+
+    private fun Anime.formatCenterText(): String {
+        return "$averageScore%"
+    }
+
+    private fun Anime.formatRightText(): String {
+        return "$popularity"
+    }
+
+    private fun Anime.formatStatusText(): String {
+        val dateString = if (startDate == null) "" else {
+            val startYear = startDate / 10000
+            val startMonth = CalendarUtils.monthToShortForm[(startDate / 100) % 100]
+            " ($startMonth $startYear - ${
+            if (endDate != null) "${CalendarUtils.monthToShortForm[(endDate / 100) % 100]} ${endDate / 10000}" else ""
+            })"
+        }
+        return "$airingStatus$dateString"
     }
 }
