@@ -2,7 +2,7 @@ package com.eriktrinh.ikuzo
 
 import android.content.Context
 import android.util.Log
-import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.ani.domain.Tokens
 import com.eriktrinh.ikuzo.utils.AuthUtils
 import retrofit2.Call
 import retrofit2.Callback

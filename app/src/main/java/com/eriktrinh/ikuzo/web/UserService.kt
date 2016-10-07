@@ -1,6 +1,6 @@
 package com.eriktrinh.ikuzo.web
 
-import com.eriktrinh.ikuzo.domain.User
+import com.eriktrinh.ikuzo.ani.domain.User
 import retrofit2.Call
 import retrofit2.http.GET
 

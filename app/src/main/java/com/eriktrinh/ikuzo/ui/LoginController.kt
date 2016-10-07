@@ -11,7 +11,7 @@ import android.webkit.*
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.AuthCallbacks
 import com.eriktrinh.ikuzo.R
-import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.ani.domain.Tokens
 import com.eriktrinh.ikuzo.web.AuthService
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import kotlinx.android.synthetic.main.controller_login_view.view.*

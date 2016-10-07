@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.domain
+package com.eriktrinh.ikuzo.ani.domain
 
 import com.google.gson.annotations.SerializedName
 
@@ -33,5 +33,4 @@ data class Anime(val id: Int,
                  val externalLinks: List<ExternalLink>?,
                  val reviews: List<Review>?,
                  @SerializedName("youtube_id") val youtubeId: String?
-) {
-}
+)

@@ -1,7 +1,7 @@
 package com.eriktrinh.ikuzo.web
 
 import android.content.Context
-import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.ani.domain.Tokens
 import com.eriktrinh.ikuzo.utils.AuthUtils
 import okhttp3.Authenticator
 import okhttp3.Request

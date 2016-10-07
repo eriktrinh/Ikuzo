@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.domain
+package com.eriktrinh.ikuzo.ani.domain
 
 import com.google.gson.annotations.SerializedName
 
@@ -11,5 +11,5 @@ data class Tag(val id: Int,
                val denied: Int,
                val category: String,
                val votes: Int,
-               @SerializedName("series_spoiler") val seriesSpoiler: Boolean) {
-}
+               @SerializedName("series_spoiler") val seriesSpoiler: Boolean
+)

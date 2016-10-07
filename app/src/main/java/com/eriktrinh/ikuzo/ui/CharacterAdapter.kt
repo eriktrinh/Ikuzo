@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.eriktrinh.ikuzo.R
-import com.eriktrinh.ikuzo.domain.Character
-import com.eriktrinh.ikuzo.ext.loadInto
+import com.eriktrinh.ikuzo.ani.domain.Character
+import com.eriktrinh.ikuzo.ext.loadAndCenterInto
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.list_item_character_view.view.*
 
@@ -47,8 +47,9 @@ class CharacterHolder(val context: Context, itemView: View) : RecyclerView.ViewH
 
     fun bindItem(character: Character) {
         Picasso.with(context)
-                .loadInto(character.imageUrl, imageView)
-        nameText.text = character.firstName + if (character.lastName != null) " ${character.lastName}" else ""
+                .loadAndCenterInto(character.imageUrl, imageView)
+        val name = character.firstName + if (character.lastName != null) " ${character.lastName}" else ""
+        nameText.text = if (name.length <= 20) name else "${name.substring(0..19)}…"
         roleText.text = character.role
     }
 }

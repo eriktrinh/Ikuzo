@@ -28,21 +28,74 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
                     tools:text="Title" />
 
                 <ImageView
                     android:id="@+id/series_detail_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="150dp"
+                    android:layout_height="203dp"
                     android:layout_alignParentStart="true"
                     android:layout_below="@id/series_detail_title"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    tools:background="@color/colorPrimaryDark"
-                    tools:layout_height="305px"
-                    tools:layout_width="255px" />
+                    tools:background="@color/colorPrimaryDark" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/series_detail_image"
+                    android:layout_alignTop="@id/series_detail_image"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/series_detail_image">
+
+                    <TextView
+                        android:id="@+id/series_detail_score_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:text="@string/score_title"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/series_detail_status_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/series_detail_score_title"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:text="@string/status_title"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/series_detail_progress_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/series_detail_status_title"
+                        android:layout_marginBottom="@dimen/activity_vertical_margin"
+                        android:text="@string/progress_title"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/series_detail_fav_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:elevation="2dp"
+                        tools:text="Favourited" />
+
+                    <Button
+                        android:id="@+id/series_detail_update_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@id/series_detail_fav_button"
+                        android:elevation="2dp"
+                        android:text="@string/update_title" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/series_detail_description_title"
@@ -50,15 +103,19 @@
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@id/series_detail_image"
                     android:layout_below="@id/series_detail_image"
-                    android:text="@string/description_title" />
+                    android:text="@string/description_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/series_detail_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/series_detail_description_title"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
                     android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin" />
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    tools:text="description content..." />
 
                 <TextView
                     android:id="@+id/series_detail_character_title"
@@ -66,7 +123,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignStart="@id/series_detail_image"
                     android:layout_below="@id/series_detail_description"
-                    android:text="@string/character_title" />
+                    android:text="@string/character_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/series_detail_character_recycler"
@@ -76,7 +135,6 @@
                     android:clipToPadding="false"
                     android:paddingBottom="@dimen/design_card_margin"
                     tools:listitem="@layout/list_item_character_view" />
-
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

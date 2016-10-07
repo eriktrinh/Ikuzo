@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.domain
+package com.eriktrinh.ikuzo.ani.domain
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
