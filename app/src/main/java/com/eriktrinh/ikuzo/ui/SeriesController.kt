@@ -8,8 +8,8 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.SeriesLab
-import com.eriktrinh.ikuzo.domain.Airing
-import com.eriktrinh.ikuzo.domain.Anime
+import com.eriktrinh.ikuzo.ani.domain.Airing
+import com.eriktrinh.ikuzo.ani.domain.Anime
 import com.eriktrinh.ikuzo.ext.loadAndCropInto
 import com.eriktrinh.ikuzo.utils.CalendarUtils
 import com.eriktrinh.ikuzo.web.SeriesService
@@ -149,9 +149,13 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
     }
 
     private fun Airing.formatCountdown(): String {
+        val minutes = (countdown / 60) % 60
         val hours = (countdown / (60 * 60)) % 24
         val days = (countdown / (60 * 60)) / 24
-        return "Ep $nextEpisode in ${if (days != 0) "${days}d" else ""} ${hours}h"
+        return "Ep $nextEpisode in" +
+                (if (days != 0) " ${days}d" else "") +
+                (if (hours != 0) " ${hours}h" else "") +
+                " ${minutes}m"
     }
 
     private fun Anime.formatLeftText(): String {

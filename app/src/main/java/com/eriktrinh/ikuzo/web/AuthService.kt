@@ -1,6 +1,6 @@
 package com.eriktrinh.ikuzo.web
 
-import com.eriktrinh.ikuzo.domain.Tokens
+import com.eriktrinh.ikuzo.ani.domain.Tokens
 import retrofit2.Call
 import retrofit2.http.POST
 import retrofit2.http.Query

@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.domain
+package com.eriktrinh.ikuzo.ani.domain
 
 import com.google.gson.annotations.SerializedName
 
@@ -8,5 +8,4 @@ data class Studio(val id: Int,
                   val favourite: Boolean,
         // Page model extras:
                   val anime: List<Anime>?
-) {
-}
+)

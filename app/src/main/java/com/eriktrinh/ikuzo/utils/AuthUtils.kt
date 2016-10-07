@@ -2,7 +2,7 @@ package com.eriktrinh.ikuzo.utils
 
 import android.content.Context
 import android.preference.PreferenceManager
-import com.eriktrinh.ikuzo.domain.User
+import com.eriktrinh.ikuzo.ani.domain.User
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.eriktrinh.ikuzo.web.UserService
 import retrofit2.Call

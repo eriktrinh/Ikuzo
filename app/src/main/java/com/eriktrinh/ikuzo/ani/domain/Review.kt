@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.domain
+package com.eriktrinh.ikuzo.ani.domain
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
@@ -13,6 +13,5 @@ data class Review(val id: Int,
                   val text: String,
                   val user: User,
                   val date: Date,
-                  val anime: Anime?) {
-
-}
+                  val anime: Anime?
+)
