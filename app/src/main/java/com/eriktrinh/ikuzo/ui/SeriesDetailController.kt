@@ -90,6 +90,18 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
                             series = response.body()
                             Log.i(TAG, "Got: $series")
                             updateUI()
+                            statusCall.enqueue(object : Callback<SeriesList> {
+                                override fun onResponse(call: Call<SeriesList>, response: Response<SeriesList>?) {
+                                    if (response != null && response.code() == 200) {
+                                        val body = response.body()
+                                        initSpinners(series, body.lists.getRecordById(series.id))
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<SeriesList>, t: Throwable?) {
+                                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+                                }
+                            })
                         }
                     }
                 }
@@ -130,6 +142,93 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
                     throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
                 }
             })
+        }
+    }
+
+    private fun initSpinners(series: Anime, status: Record?) {
+        val updateButton = view.series_detail_update_button
+
+        var preUpdate = status?.copy() ?: Record(ListStatus.NONE, 0, 0, Id(series.id))
+        val posUpdate = preUpdate.copy()
+
+        val episodes = emptyList<Int>().plus(Array(series.totalEpisodes + 1, Int::toInt))
+        val progSpinner = view.series_detail_progress_spinner
+        progSpinner.setItems(episodes)
+        progSpinner.isEnabled = false
+
+        val scores = emptyList<Int>().plus(Array(11, Int::toInt))
+        val scoreSpinner = view.series_detail_score_spinner
+        scoreSpinner.setItems(scores)
+        scoreSpinner.isEnabled = false
+
+        val statuses = ListStatus.values().map { it.string }
+        val statusSpinner = view.series_detail_status_spinner
+        statusSpinner.setItems(statuses)
+
+        if (status != null) {
+            progSpinner.selectedIndex = preUpdate.episodesWatched
+            scoreSpinner.selectedIndex = preUpdate.score
+            statusSpinner.selectedIndex = statuses.indexOf(preUpdate.listStatus.string)
+            scoreSpinner.isEnabled = status.listStatus != ListStatus.PLAN_TO_WATCH &&
+                    status.listStatus != ListStatus.NONE
+            progSpinner.isEnabled = scoreSpinner.isEnabled &&
+                    status.listStatus != ListStatus.COMPLETED
+        }
+
+        progSpinner.setOnItemSelectedListener { view, position, id, item ->
+            posUpdate.episodesWatched = position
+            updateButton.isEnabled = posUpdate != preUpdate
+        }
+        scoreSpinner.setOnItemSelectedListener { view, position, id, item ->
+            posUpdate.score = position
+            updateButton.isEnabled = posUpdate != preUpdate
+        }
+        statusSpinner.setOnItemSelectedListener { view, position, id, item ->
+            val listStatus = ListStatus.values()[position]
+            posUpdate.listStatus = listStatus
+            if (listStatus == ListStatus.COMPLETED) {
+                posUpdate.episodesWatched = series.totalEpisodes
+                progSpinner.selectedIndex = series.totalEpisodes
+                progSpinner.isEnabled = false
+            } else if (listStatus == ListStatus.NONE || listStatus == ListStatus.PLAN_TO_WATCH) {
+                posUpdate.episodesWatched = 0
+                progSpinner.selectedIndex = 0
+                posUpdate.score = 0
+                scoreSpinner.selectedIndex = 0
+                progSpinner.isEnabled = false
+                scoreSpinner.isEnabled = false
+            } else {
+                progSpinner.isEnabled = true
+                scoreSpinner.isEnabled = true
+            }
+            updateButton.isEnabled = posUpdate != preUpdate
+        }
+
+        val updateCallback = object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>?) {
+                if (response != null && response.code() == 200) {
+                    preUpdate = posUpdate
+                    updateButton.isEnabled = false
+                    return
+                }
+                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable?) {
+                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
+        updateButton.setOnClickListener {
+            if (posUpdate.listStatus == ListStatus.NONE) {
+                listService.delListEntry(series.id).enqueue(updateCallback)
+            } else {
+                val editList = EditList(series.id,
+                        if (preUpdate.score == posUpdate.score) null else posUpdate.score,
+                        if (preUpdate.episodesWatched == posUpdate.episodesWatched) null else posUpdate.episodesWatched,
+                        if (preUpdate.listStatus == posUpdate.listStatus) null else posUpdate.listStatus
+                )
+                listService.putListEntry(editList).enqueue(updateCallback)
+            }
         }
     }
 }
