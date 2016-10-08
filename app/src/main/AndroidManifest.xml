@@ -22,8 +22,8 @@
         </activity>
         <activity android:name=".ui.auth.LoginActivity" />
         <activity
-            android:name=".ui.page.SeriesDetailActivity"
-            android:label="@string/title_activity_series_detail"
+            android:name=".ui.page.SeriesPageActivity"
+            android:label="@string/title_activity_series_page"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

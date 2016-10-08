@@ -11,18 +11,12 @@ import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.data.ani.Airing
 import com.eriktrinh.ikuzo.data.ani.Anime
 import com.eriktrinh.ikuzo.ui.SpacingItemDecoration
-import com.eriktrinh.ikuzo.ui.page.SeriesDetailActivity
+import com.eriktrinh.ikuzo.ui.page.SeriesPageActivity
 import com.eriktrinh.ikuzo.utils.CalendarUtils
-import com.eriktrinh.ikuzo.utils.SeriesLab
 import com.eriktrinh.ikuzo.utils.ext.loadAndCropInto
-import com.eriktrinh.ikuzo.web.ServiceGenerator
-import com.eriktrinh.ikuzo.web.service.SeriesService
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.controller_series_view.view.*
 import kotlinx.android.synthetic.main.list_item_series_view.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SeriesController : Controller() {
     companion object {
@@ -30,7 +24,7 @@ class SeriesController : Controller() {
     }
 
     private lateinit var adapter: SeriesAdapter
-    private lateinit var seriesService: SeriesService
+    private lateinit var presenter: SeriesPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_view, container, false)
@@ -43,24 +37,18 @@ class SeriesController : Controller() {
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.design_card_margin)))
 
-        seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
-        val call = seriesService.browseAnime()
-        call.enqueue(object : Callback<List<Anime>> {
-            override fun onFailure(call: Call<List<Anime>>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
-                when (response?.raw()?.code() ?: 400) {
-                    200 -> {
-                        val series: List<Anime> = response?.body() ?: emptyList()
-                        series.forEach { SeriesLab.put(it) }
-                        adapter.addItems(series)
-                    }
-                }
-            }
-        })
+        presenter = SeriesPresenter(activity)
+                .takeController(this)
         return view
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onDestroy()
+    }
+
+    fun onItemsNext(items: List<Anime>) {
+        adapter.addItems(items)
     }
 
     inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -90,7 +78,7 @@ class SeriesController : Controller() {
         }
 
         override fun onClick(view: View) {
-            startActivity(SeriesDetailActivity.newIntent(activity, anime.id))
+            startActivity(SeriesPageActivity.newIntent(activity, anime.id))
             Log.i(TAG, "$anime.titleEnglish} clicked")
         }
     }

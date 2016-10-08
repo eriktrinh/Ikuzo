@@ -9,14 +9,14 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.eriktrinh.ikuzo.R
 import kotlinx.android.synthetic.main.activity_series_detail.*
-import kotlinx.android.synthetic.main.controller_series_detail.*
+import kotlinx.android.synthetic.main.controller_series_page.*
 
-class SeriesDetailActivity : AppCompatActivity() {
+class SeriesPageActivity : AppCompatActivity() {
 
     companion object {
         private val EXTRA_SERIES_ID = "ikuzo.SERIES_ID"
         fun newIntent(context: Context, id: Int): Intent {
-            return Intent(context, SeriesDetailActivity::class.java)
+            return Intent(context, SeriesPageActivity::class.java)
                     .putExtra(EXTRA_SERIES_ID, id)
         }
     }
@@ -37,7 +37,7 @@ class SeriesDetailActivity : AppCompatActivity() {
         val id = intent.getIntExtra(EXTRA_SERIES_ID, -1)
 
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(SeriesDetailController(id)))
+            router.setRoot(RouterTransaction.with(SeriesPageController(id)))
         }
     }
 

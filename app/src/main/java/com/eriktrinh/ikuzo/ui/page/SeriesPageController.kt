@@ -3,12 +3,10 @@ package com.eriktrinh.ikuzo.ui.page
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.Controller
@@ -16,27 +14,22 @@ import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.data.ani.Anime
 import com.eriktrinh.ikuzo.data.ani.Favourite
 import com.eriktrinh.ikuzo.data.ani.Record
-import com.eriktrinh.ikuzo.data.ani.SeriesList
 import com.eriktrinh.ikuzo.data.enums.ListStatus
-import com.eriktrinh.ikuzo.data.payload.EditList
 import com.eriktrinh.ikuzo.data.payload.Id
 import com.eriktrinh.ikuzo.ui.SpacingItemDecoration
-import com.eriktrinh.ikuzo.utils.SeriesLab
 import com.eriktrinh.ikuzo.utils.ext.loadAndCropInto
-import com.eriktrinh.ikuzo.utils.shared_pref.MeUtils
 import com.eriktrinh.ikuzo.web.ServiceGenerator
-import com.eriktrinh.ikuzo.web.service.ListService
 import com.eriktrinh.ikuzo.web.service.SeriesService
+import com.jaredrummler.materialspinner.MaterialSpinner
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.controller_series_detail.view.*
-import okhttp3.ResponseBody
+import kotlinx.android.synthetic.main.controller_series_page.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SeriesDetailController(args: Bundle?) : Controller(args) {
+class SeriesPageController(args: Bundle?) : Controller(args) {
     companion object {
-        private val TAG = "SeriesDetailController"
+        private val TAG = "SeriesPageController"
         private val KEY_ID = "ARGS_ID"
         private fun Bundle.putId(id: Int): Bundle {
             this.putInt(KEY_ID, id)
@@ -46,30 +39,31 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
 
     constructor(id: Int) : this(Bundle().putId(id))
 
+    private lateinit var presenter: SeriesPagePresenter
     private lateinit var seriesService: SeriesService
-    private lateinit var listService: ListService
     private var id: Int = -1
-    private lateinit var series: Anime // TODO Figure out how to handle both anime and manga w/o too much code duplication
-    private lateinit var seriesImageView: ImageView
     private lateinit var characterAdapter: CharacterAdapter
     private lateinit var descriptionTextView: TextView
     private lateinit var titleTextView: TextView
     private lateinit var favouriteButton: Button
+    private lateinit var progSpinner: MaterialSpinner
+    private lateinit var scoreSpinner: MaterialSpinner
+    private lateinit var statusSpinner: MaterialSpinner
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val view = inflater.inflate(R.layout.controller_series_detail, container, false)
-        seriesImageView = view.series_detail_image
+        val view = inflater.inflate(R.layout.controller_series_page, container, false)
         descriptionTextView = view.series_detail_description
         titleTextView = view.series_detail_title
         favouriteButton = view.series_detail_fav_button
+        progSpinner = view.series_detail_progress_spinner
+        scoreSpinner = view.series_detail_score_spinner
+        statusSpinner = view.series_detail_status_spinner
 
         view.fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
 
         seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
-        listService = ServiceGenerator.createService(ListService::class.java, activity)
 
         id = args.getInt(KEY_ID, id)
-        series = SeriesLab.getOrElse(id) { throw RuntimeException("Series not found") }
 
         val recyclerView = view.series_detail_character_recycler
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
@@ -81,49 +75,27 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
                 resources.getDimensionPixelSize(R.dimen.activity_horizontal_margin),
                 true))
 
-        val pageCall = seriesService.getAnimePage(id)
-        val statusCall = listService.getList(MeUtils.getMyId(activity) ?: -1) // TODO make call and store response on app open/write on update
-        pageCall.enqueue(object : Callback<Anime> {
-            override fun onResponse(call: Call<Anime>, response: Response<Anime>?) {
-                when (response?.raw()?.code() ?: 400) {
-                    200 -> {
-                        if (response != null) {
-                            series = response.body()
-                            Log.i(TAG, "Got: $series")
-                            updateUI()
-                            statusCall.enqueue(object : Callback<SeriesList> {
-                                override fun onResponse(call: Call<SeriesList>, response: Response<SeriesList>?) {
-                                    if (response != null && response.code() == 200) {
-                                        val body = response.body()
-                                        initSpinners(series, body.lists.getRecordById(series.id))
-                                    }
-                                }
-
-                                override fun onFailure(call: Call<SeriesList>, t: Throwable?) {
-                                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-                                }
-                            })
-                        }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<Anime>?, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-
         initButtons()
+
+        presenter = SeriesPagePresenter(activity, id)
+                .takeController(this)
         return view
     }
 
-    private fun updateUI() {
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onDestroy()
+    }
+
+    fun onItemsNext(series: Anime, status: Record?) {
         Picasso.with(activity)
-                .loadAndCropInto(series.imageUrl, seriesImageView)
+                .loadAndCropInto(series.imageUrl, view.series_detail_image)
         characterAdapter.addItems(series.characters ?: emptyList())
         descriptionTextView.text = series.description?.replace("<br>", "")
         titleTextView.text = series.titleEnglish
         favouriteButton.text = if (series.favourite ?: false) "Favourited" else "Unfavourited"
+        initSpinners(series, status)
+        setSpinnersSelected(status)
     }
 
     private fun initButtons() {
@@ -148,41 +120,26 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
 
     private fun initSpinners(series: Anime, status: Record?) {
         val updateButton = view.series_detail_update_button
-
-        var preUpdate = status?.copy() ?: Record(ListStatus.NONE, 0, 0, Id(series.id))
-        val posUpdate = preUpdate.copy()
+        val posUpdate = status?.copy() ?: Record(ListStatus.NONE, 0, 0, Id(series.id))
 
         val episodes = emptyList<Int>().plus(Array(series.totalEpisodes + 1, Int::toInt))
-        val progSpinner = view.series_detail_progress_spinner
         progSpinner.setItems(episodes)
         progSpinner.isEnabled = false
 
         val scores = emptyList<Int>().plus(Array(11, Int::toInt))
-        val scoreSpinner = view.series_detail_score_spinner
         scoreSpinner.setItems(scores)
         scoreSpinner.isEnabled = false
 
         val statuses = ListStatus.values().map { it.string }
-        val statusSpinner = view.series_detail_status_spinner
         statusSpinner.setItems(statuses)
-
-        if (status != null) {
-            progSpinner.selectedIndex = preUpdate.episodesWatched
-            scoreSpinner.selectedIndex = preUpdate.score
-            statusSpinner.selectedIndex = statuses.indexOf(preUpdate.listStatus.string)
-            scoreSpinner.isEnabled = status.listStatus != ListStatus.PLAN_TO_WATCH &&
-                    status.listStatus != ListStatus.NONE
-            progSpinner.isEnabled = scoreSpinner.isEnabled &&
-                    status.listStatus != ListStatus.COMPLETED
-        }
 
         progSpinner.setOnItemSelectedListener { view, position, id, item ->
             posUpdate.episodesWatched = position
-            updateButton.isEnabled = posUpdate != preUpdate
+            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
         }
         scoreSpinner.setOnItemSelectedListener { view, position, id, item ->
             posUpdate.score = position
-            updateButton.isEnabled = posUpdate != preUpdate
+            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
         }
         statusSpinner.setOnItemSelectedListener { view, position, id, item ->
             val listStatus = ListStatus.values()[position]
@@ -202,34 +159,24 @@ class SeriesDetailController(args: Bundle?) : Controller(args) {
                 progSpinner.isEnabled = true
                 scoreSpinner.isEnabled = true
             }
-            updateButton.isEnabled = posUpdate != preUpdate
+            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
         }
 
-        val updateCallback = object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>?) {
-                if (response != null && response.code() == 200) {
-                    preUpdate = posUpdate
-                    updateButton.isEnabled = false
-                    return
-                }
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        }
         updateButton.setOnClickListener {
-            if (posUpdate.listStatus == ListStatus.NONE) {
-                listService.delListEntry(series.id).enqueue(updateCallback)
-            } else {
-                val editList = EditList(series.id,
-                        if (preUpdate.score == posUpdate.score) null else posUpdate.score,
-                        if (preUpdate.episodesWatched == posUpdate.episodesWatched) null else posUpdate.episodesWatched,
-                        if (preUpdate.listStatus == posUpdate.listStatus) null else posUpdate.listStatus
-                )
-                listService.putListEntry(editList).enqueue(updateCallback)
-            }
+            presenter.onUpdateButtonClicked(posUpdate)
+        }
+    }
+
+    private fun setSpinnersSelected(status: Record?) {
+        if (status != null) {
+            val statuses = ListStatus.values().map { it.string }
+            progSpinner.selectedIndex = status.episodesWatched
+            scoreSpinner.selectedIndex = status.score
+            statusSpinner.selectedIndex = statuses.indexOf(status.listStatus.string)
+            scoreSpinner.isEnabled = status.listStatus != ListStatus.PLAN_TO_WATCH &&
+                    status.listStatus != ListStatus.NONE
+            progSpinner.isEnabled = scoreSpinner.isEnabled &&
+                    status.listStatus != ListStatus.COMPLETED
         }
     }
 }
