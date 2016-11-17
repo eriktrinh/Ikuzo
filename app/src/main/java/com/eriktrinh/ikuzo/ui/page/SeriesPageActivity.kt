@@ -37,7 +37,7 @@ class SeriesPageActivity : AppCompatActivity() {
         val id = intent.getIntExtra(EXTRA_SERIES_ID, -1)
 
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(SeriesPageController(id)))
+            router.setRoot(RouterTransaction.with(SeriesPagePagerController(id)))
         }
     }
 
