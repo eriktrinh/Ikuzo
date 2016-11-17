@@ -1,12 +1,11 @@
 package com.eriktrinh.ikuzo.ui.page
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.Controller
@@ -45,7 +44,7 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
     private lateinit var characterAdapter: CharacterAdapter
     private lateinit var descriptionTextView: TextView
     private lateinit var titleTextView: TextView
-    private lateinit var favouriteButton: Button
+    private lateinit var favFab: FloatingActionButton
     private lateinit var progSpinner: MaterialSpinner
     private lateinit var scoreSpinner: MaterialSpinner
     private lateinit var statusSpinner: MaterialSpinner
@@ -54,12 +53,11 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
         val view = inflater.inflate(R.layout.controller_series_page, container, false)
         descriptionTextView = view.series_detail_description
         titleTextView = view.series_detail_title
-        favouriteButton = view.series_detail_fav_button
+        favFab = view.series_detail_fav_fab
         progSpinner = view.series_detail_progress_spinner
         scoreSpinner = view.series_detail_score_spinner
         statusSpinner = view.series_detail_status_spinner
 
-        view.fab.setOnClickListener { view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show() }
 
         seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
 
@@ -93,18 +91,19 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
         characterAdapter.addItems(series.characters ?: emptyList())
         descriptionTextView.text = series.description?.replace("<br>", "")
         titleTextView.text = series.titleEnglish
-        favouriteButton.text = if (series.favourite ?: false) "Favourited" else "Unfavourited"
+        favFab.setImageResource(if (series.favourite ?: false) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
         initSpinners(series, status)
         setSpinnersSelected(status)
     }
 
     private fun initButtons() {
-        favouriteButton.setOnClickListener {
+        favFab.setImageResource(R.drawable.ic_menu_unfavourited)
+        favFab.setOnClickListener { view ->
             val call = seriesService.favAnime(Id(id))
             call.enqueue(object : Callback<Favourite> {
                 override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
                     if (response != null && response.code() == 200) {
-                        favouriteButton.text = if (response.body().order == null) "Favourited" else "Unfavourited"
+                        favFab.setImageResource(if (response.body().order == null) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
                     } else {
                         Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
                                 .show()

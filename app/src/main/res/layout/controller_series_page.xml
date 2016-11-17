@@ -59,6 +59,7 @@
                         android:layout_width="76dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:layout_marginBottom="12dp"
                         android:elevation="2dp"
                         app:ms_dropdown_height="200dp"
                         app:ms_dropdown_max_height="200dp"
@@ -70,6 +71,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_below="@id/series_detail_score_spinner"
+                        android:layout_marginBottom="12dp"
                         android:elevation="2dp"
                         app:ms_dropdown_height="200dp"
                         app:ms_dropdown_max_height="200dp"
@@ -111,18 +113,10 @@
                         android:textSize="14sp" />
 
                     <Button
-                        android:id="@+id/series_detail_fav_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:elevation="2dp"
-                        tools:text="Favourited" />
-
-                    <Button
                         android:id="@+id/series_detail_update_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_above="@id/series_detail_fav_button"
+                        android:layout_alignParentBottom="true"
                         android:elevation="2dp"
                         android:enabled="false"
                         android:text="@string/update_title" />
@@ -171,10 +165,10 @@
     </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/series_detail_fav_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/ic_menu_unfavourited" />
 </android.support.design.widget.CoordinatorLayout>
