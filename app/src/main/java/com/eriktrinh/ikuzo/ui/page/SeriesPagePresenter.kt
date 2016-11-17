@@ -29,7 +29,7 @@ class SeriesPagePresenter(context: Context, id: Int) {
     private var controllers: MutableList<PagerChildController> = ArrayList()
     private val seriesService: SeriesService
     private val listService: ListService
-    private lateinit var series: Anime
+    private var series: Anime? = null
     private var userStatus: Record? = null
     private var oneDone = false
 
@@ -78,7 +78,8 @@ class SeriesPagePresenter(context: Context, id: Int) {
     }
 
     fun publish() {
-        controllers.forEach { it.onItemsNext(series, userStatus) }
+        if (series != null)
+            controllers.forEach { it.onItemsNext(series!!, userStatus) }
     }
 
     fun onDestroy() {
@@ -105,9 +106,9 @@ class SeriesPagePresenter(context: Context, id: Int) {
             }
         }
         if (update.listStatus == ListStatus.NONE) {
-            listService.delListEntry(series.id).enqueue(updateCallback)
+            listService.delListEntry(series?.id ?: -1).enqueue(updateCallback)
         } else {
-            val editList = EditList(series.id,
+            val editList = EditList(series?.id ?: -1,
                     if (update.score == userStatus?.score) null else update.score,
                     if (update.episodesWatched == userStatus?.episodesWatched) null else update.episodesWatched,
                     if (update.listStatus == userStatus?.listStatus) null else update.listStatus
@@ -117,20 +118,22 @@ class SeriesPagePresenter(context: Context, id: Int) {
     }
 
     fun onFavouriteButtonClicked(activity: Activity) {
-        val call = seriesService.favAnime(Id(series.id))
-        call.enqueue(object : Callback<Favourite> {
-            override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
-                if (response != null && response.code() == 200) {
-                    controllers.forEach { it.onFavouriteChanged(response.body().order == null) }
-                } else {
-                    Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
-                            .show()
+        if (series != null) {
+            val call = seriesService.favAnime(Id(series!!.id))
+            call.enqueue(object : Callback<Favourite> {
+                override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
+                    if (response != null && response.code() == 200) {
+                        controllers.forEach { it.onFavouriteChanged(response.body().order == null) }
+                    } else {
+                        Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
+                                .show()
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<Favourite>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
+                override fun onFailure(call: Call<Favourite>, t: Throwable?) {
+                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+            })
+        }
     }
 }

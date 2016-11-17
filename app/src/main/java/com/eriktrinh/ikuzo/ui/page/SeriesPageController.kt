@@ -151,7 +151,7 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
         characterAdapter.addItems(series.characters ?: emptyList())
         descriptionTextView.text = series.description?.replace("<br>", "")
         titleTextView.text = series.titleEnglish
-        favFab.setImageResource(if (series.favourite ?: false) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
+        onFavouriteChanged(series.favourite ?: false)
         initSpinners(series, status)
         setSpinnersSelected(status)
     }
