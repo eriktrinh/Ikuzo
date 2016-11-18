@@ -14,13 +14,11 @@
 
         <ImageView
             android:id="@+id/character_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            tools:background="@color/colorAccent"
-            tools:layout_height="305dp"
-            tools:layout_width="255dp" />
+            tools:background="@color/colorAccent" />
 
         <TextView
             android:id="@+id/character_name"

@@ -2,7 +2,7 @@ package com.eriktrinh.ikuzo.web
 
 import android.content.Context
 import android.util.Log
-import com.eriktrinh.ikuzo.utils.AuthUtils
+import com.eriktrinh.ikuzo.utils.shared_pref.AuthUtils
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit

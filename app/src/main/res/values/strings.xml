@@ -18,4 +18,14 @@
     <string name="browse_type">Type</string>
     <string name="browse_status">Status</string>
     <string name="browse_desc">Descending</string>
+    <string name="title_activity_series_page">SeriesPageActivity</string>
+    <string name="staff_title">Staff</string>
+    <string name="update_title">Update</string>
+    <string name="fav_title">Favourite</string>
+    <string name="progress_title">Progress</string>
+    <string name="score_title">Score</string>
+    <string name="status_title">Status</string>
+    <string name="reviews_title">Reviews</string>
+    <string name="expand">More</string>
+    <string name="collapse">Less</string>
 </resources>

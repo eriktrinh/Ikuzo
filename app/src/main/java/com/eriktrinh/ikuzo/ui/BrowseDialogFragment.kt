@@ -6,11 +6,10 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
 import com.eriktrinh.ikuzo.R
-import com.eriktrinh.ikuzo.enums.Season
-import com.eriktrinh.ikuzo.enums.Sort
-import com.eriktrinh.ikuzo.ext.getYear
+import com.eriktrinh.ikuzo.data.enums.Season
+import com.eriktrinh.ikuzo.data.enums.Sort
+import com.eriktrinh.ikuzo.utils.ext.getYear
 import kotlinx.android.synthetic.main.dialog_browse.view.*
 import java.util.*
 
@@ -47,25 +46,18 @@ class BrowseDialogFragment : DialogFragment() {
     }
 
     private fun setSpinners(view: View) {
-        val spinnerItem = android.R.layout.simple_spinner_item
-        val spinnerDropdownItem = android.R.layout.simple_spinner_dropdown_item
-
         val currYear = Calendar.getInstance().getYear()
-        val years = Array(currYear - 1951) { (currYear - it).toString() }
-        val yearAdapter = ArrayAdapter<String>(activity, spinnerItem, listOf("").plus(years))
-        yearAdapter.setDropDownViewResource(spinnerDropdownItem)
-        view.browse_year_spinner.adapter = yearAdapter
-//        view.browse_year_spinner.setSelection()
+        val firstYear = 1951
 
-        val seasonAdapter = ArrayAdapter<String>(activity, spinnerItem, listOf("").plus(Season.values().map(Season::string)))
-        seasonAdapter.setDropDownViewResource(spinnerDropdownItem)
+        val years = listOf("").plus(Array(currYear - firstYear) { (currYear - it).toString() })
+        view.browse_year_spinner.setItems(years)
+
+        val seasons = listOf("").plus(Season.values().map(Season::string))
         val seasonSpinner = view.browse_season_spinner
-        seasonSpinner.adapter = seasonAdapter
-//        seasonSpinner.setSelection()
+        seasonSpinner.setItems(seasons)
 
-        val sortAdapter = ArrayAdapter<String>(activity, spinnerItem, Sort.values().map(Sort::string))
-        sortAdapter.setDropDownViewResource(spinnerDropdownItem)
+        val sortItems = Sort.values().map(Sort::string)
         val sortSpinner = view.browse_sort_spinner
-        sortSpinner.adapter = sortAdapter
+        sortSpinner.setItems(sortItems)
     }
 }
