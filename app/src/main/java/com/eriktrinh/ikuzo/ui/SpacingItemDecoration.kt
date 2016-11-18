@@ -28,7 +28,6 @@ class SpacingItemDecoration(val dividerSpace: Int, val endingSpace: Int? = null,
             } else {
                 outRect.bottom = endingSpace
             }
-
         }
     }
 }

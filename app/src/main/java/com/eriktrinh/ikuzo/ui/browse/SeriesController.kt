@@ -107,11 +107,11 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             val oldSize = series.size
             series = series.plus(items)
             for (i in 0..items.size - 1) {
-                notifyItemInserted(oldSize + i)
                 Picasso.with(activity)
                         .load(items[i].imageUrl)
                         .fetch()
             }
+            notifyItemRangeInserted(oldSize, items.size)
         }
 
         fun clearItems() {
