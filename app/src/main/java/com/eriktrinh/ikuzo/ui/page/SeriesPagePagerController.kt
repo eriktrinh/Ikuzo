@@ -32,7 +32,6 @@ class SeriesPagePagerController(args: Bundle?) : Controller(args) {
         pagerAdapter = object : ControllerPagerAdapter(this, false) {
             override fun getItem(position: Int): Controller {
                 val child = if (position == 0) SeriesPageController(id) else SeriesReviewController(id)
-
                 if (presenter == null) {
                     presenter = SeriesPagePresenter(activity, id)
                 }

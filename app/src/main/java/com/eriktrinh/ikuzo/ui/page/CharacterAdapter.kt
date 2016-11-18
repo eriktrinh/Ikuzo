@@ -31,13 +31,18 @@ class CharacterAdapter(val context: Context, var characters: List<Character>) : 
         val oldSize = characters.size
         characters = characters.plus(items)
         for (i in 0..items.size - 1) {
-            notifyItemInserted(oldSize + i)
             Picasso.with(context)
                     .load(items[i].imageUrl)
                     .fetch()
         }
+        notifyItemRangeInserted(oldSize, items.size)
     }
 
+    fun clearItems() {
+        val oldSize = characters.size
+        characters = emptyList()
+        notifyItemRangeRemoved(0, oldSize)
+    }
 }
 
 class CharacterHolder(val context: Context, itemView: View) : RecyclerView.ViewHolder(itemView) {

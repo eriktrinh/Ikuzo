@@ -77,6 +77,12 @@ class SeriesPagePresenter(context: Context, id: Int) {
         return this
     }
 
+    fun publish(controller: PagerChildController) {
+        if (series != null) {
+            controller.onItemsNext(series!!, userStatus)
+        }
+    }
+
     fun publish() {
         if (series != null)
             controllers.forEach { it.onItemsNext(series!!, userStatus) }

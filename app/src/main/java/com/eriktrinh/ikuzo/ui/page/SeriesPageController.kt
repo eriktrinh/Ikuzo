@@ -70,6 +70,8 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
 
         initButtons()
 
+        getPresenter().publish(this)
+
         return view
     }
 
@@ -146,14 +148,17 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
     }
 
     override fun onItemsNext(series: Anime, status: Record?) {
-        Picasso.with(activity)
-                .loadAndCropInto(series.imageUrl, view.series_detail_image)
-        characterAdapter.addItems(series.characters ?: emptyList())
-        descriptionTextView.text = series.description?.replace("<br>", "")
-        titleTextView.text = series.titleEnglish
-        onFavouriteChanged(series.favourite ?: false)
-        initSpinners(series, status)
-        setSpinnersSelected(status)
+        if (isAttached) {
+            Picasso.with(activity)
+                    .loadAndCropInto(series.imageUrl, view.series_detail_image)
+            characterAdapter.clearItems()
+            characterAdapter.addItems(series.characters ?: emptyList())
+            descriptionTextView.text = series.description?.replace("<br>", "")
+            titleTextView.text = series.titleEnglish
+            onFavouriteChanged(series.favourite ?: false)
+            initSpinners(series, status)
+            setSpinnersSelected(status)
+        }
     }
 
     override fun onItemUpdateableChanged(canUpdate: Boolean) {
