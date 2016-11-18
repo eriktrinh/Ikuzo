@@ -18,4 +18,6 @@
     <string name="score_title">Score</string>
     <string name="status_title">Status</string>
     <string name="reviews_title">Reviews</string>
+    <string name="expand">More</string>
+    <string name="collapse">Less</string>
 </resources>

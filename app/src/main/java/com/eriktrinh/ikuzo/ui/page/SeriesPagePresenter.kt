@@ -1,28 +1,32 @@
 package com.eriktrinh.ikuzo.ui.page
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.eriktrinh.ikuzo.data.ani.Anime
+import com.eriktrinh.ikuzo.data.ani.Favourite
 import com.eriktrinh.ikuzo.data.ani.Record
 import com.eriktrinh.ikuzo.data.ani.SeriesList
 import com.eriktrinh.ikuzo.data.enums.ListStatus
 import com.eriktrinh.ikuzo.data.payload.EditList
+import com.eriktrinh.ikuzo.data.payload.Id
 import com.eriktrinh.ikuzo.utils.shared_pref.MeUtils
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.eriktrinh.ikuzo.web.service.ListService
 import com.eriktrinh.ikuzo.web.service.SeriesService
-import kotlinx.android.synthetic.main.controller_series_page.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 class SeriesPagePresenter(context: Context, id: Int) {
     companion object {
         val TAG = "SeriesPagePresenter"
     }
 
-    private var controller: SeriesPageController? = null
+    private var controllers: MutableList<PagerChildController> = ArrayList()
     private val seriesService: SeriesService
     private val listService: ListService
     private var series: Anime? = null
@@ -66,33 +70,38 @@ class SeriesPagePresenter(context: Context, id: Int) {
         })
     }
 
-    fun takeController(controller: SeriesPageController): SeriesPagePresenter {
-        this.controller = controller
+    fun takeController(controller: PagerChildController): SeriesPagePresenter {
+        controllers.add(controller)
+        controller.setPresenter(this)
         publish()
         return this
     }
 
-    fun publish() {
-        if (controller != null) {
-            if (series != null)
-                controller?.onItemsNext(series!!, userStatus)
+    fun publish(controller: PagerChildController) {
+        if (series != null) {
+            controller.onItemsNext(series!!, userStatus)
         }
     }
 
-    fun onDestroy() {
-        controller = null
+    fun publish() {
+        if (series != null)
+            controllers.forEach { it.onItemsNext(series!!, userStatus) }
     }
 
-    fun onSpinnersUpdated(update: Record): Boolean {
+    fun onDestroy() {
+        controllers.clear()
+    }
+
+    fun isUpdateable(update: Record): Boolean {
         return userStatus != update
     }
 
     fun onUpdateButtonClicked(update: Record) {
         val updateCallback = object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>?) {
-                if (response != null && response.code() == 200 && controller != null) {
+                if (response != null && response.code() == 200) {
                     userStatus = update
-                    controller!!.view.series_detail_update_button.isEnabled = false
+                    controllers.forEach { it.onItemUpdateableChanged(false) }
                     return
                 }
                 throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -111,6 +120,26 @@ class SeriesPagePresenter(context: Context, id: Int) {
                     if (update.listStatus == userStatus?.listStatus) null else update.listStatus
             )
             listService.putListEntry(editList).enqueue(updateCallback)
+        }
+    }
+
+    fun onFavouriteButtonClicked(activity: Activity) {
+        if (series != null) {
+            val call = seriesService.favAnime(Id(series!!.id))
+            call.enqueue(object : Callback<Favourite> {
+                override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
+                    if (response != null && response.code() == 200) {
+                        controllers.forEach { it.onFavouriteChanged(response.body().order == null) }
+                    } else {
+                        Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
+                                .show()
+                    }
+                }
+
+                override fun onFailure(call: Call<Favourite>, t: Throwable?) {
+                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+            })
         }
     }
 }

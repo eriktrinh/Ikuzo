@@ -7,11 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.data.ani.Anime
-import com.eriktrinh.ikuzo.data.ani.Favourite
 import com.eriktrinh.ikuzo.data.ani.Record
 import com.eriktrinh.ikuzo.data.enums.ListStatus
 import com.eriktrinh.ikuzo.data.payload.Id
@@ -22,11 +19,9 @@ import com.eriktrinh.ikuzo.web.service.SeriesService
 import com.jaredrummler.materialspinner.MaterialSpinner
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.controller_series_page.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class SeriesPageController(args: Bundle?) : Controller(args) {
+class SeriesPageController(args: Bundle?) : PagerChildController(args) {
+
     companion object {
         private val TAG = "SeriesPageController"
         private val KEY_ID = "ARGS_ID"
@@ -38,9 +33,8 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
 
     constructor(id: Int) : this(Bundle().putId(id))
 
-    private lateinit var presenter: SeriesPagePresenter
     private lateinit var seriesService: SeriesService
-    private var id: Int = -1
+    private val id: Int
     private lateinit var characterAdapter: CharacterAdapter
     private lateinit var descriptionTextView: TextView
     private lateinit var titleTextView: TextView
@@ -48,6 +42,10 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
     private lateinit var progSpinner: MaterialSpinner
     private lateinit var scoreSpinner: MaterialSpinner
     private lateinit var statusSpinner: MaterialSpinner
+
+    init {
+        id = args?.getInt(KEY_ID, -1) ?: -1
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_page, container, false)
@@ -58,10 +56,7 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
         scoreSpinner = view.series_detail_score_spinner
         statusSpinner = view.series_detail_status_spinner
 
-
         seriesService = ServiceGenerator.createService(SeriesService::class.java, activity)
-
-        id = args.getInt(KEY_ID, id)
 
         val recyclerView = view.series_detail_character_recycler
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
@@ -75,51 +70,24 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
 
         initButtons()
 
-        presenter = SeriesPagePresenter(activity, id)
-                .takeController(this)
+        getPresenter().publish(this)
+
         return view
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.onDestroy()
-    }
-
-    fun onItemsNext(series: Anime, status: Record?) {
-        Picasso.with(activity)
-                .loadAndCropInto(series.imageUrl, view.series_detail_image)
-        characterAdapter.addItems(series.characters ?: emptyList())
-        descriptionTextView.text = series.description?.replace("<br>", "")
-        titleTextView.text = series.titleEnglish
-        favFab.setImageResource(if (series.favourite ?: false) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
-        initSpinners(series, status)
-        setSpinnersSelected(status)
     }
 
     private fun initButtons() {
         favFab.setImageResource(R.drawable.ic_menu_unfavourited)
-        favFab.setOnClickListener { view ->
-            val call = seriesService.favAnime(Id(id))
-            call.enqueue(object : Callback<Favourite> {
-                override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
-                    if (response != null && response.code() == 200) {
-                        favFab.setImageResource(if (response.body().order == null) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
-                    } else {
-                        Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
-                                .show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Favourite>, t: Throwable?) {
-                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-            })
-        }
+        favFab.setOnClickListener { getPresenter().onFavouriteButtonClicked(activity) }
     }
 
     private fun initSpinners(series: Anime, status: Record?) {
         val updateButton = view.series_detail_update_button
         val posUpdate = status?.copy() ?: Record(ListStatus.NONE, 0, 0, Id(series.id))
+        val presenter = getPresenter()
 
         val episodes = emptyList<Int>().plus(Array(series.totalEpisodes + 1, Int::toInt))
         progSpinner.setItems(episodes)
@@ -134,11 +102,11 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
 
         progSpinner.setOnItemSelectedListener { view, position, id, item ->
             posUpdate.episodesWatched = position
-            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
+            updateButton.isEnabled = presenter.isUpdateable(posUpdate)
         }
         scoreSpinner.setOnItemSelectedListener { view, position, id, item ->
             posUpdate.score = position
-            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
+            updateButton.isEnabled = presenter.isUpdateable(posUpdate)
         }
         statusSpinner.setOnItemSelectedListener { view, position, id, item ->
             val listStatus = ListStatus.values()[position]
@@ -158,7 +126,7 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
                 progSpinner.isEnabled = true
                 scoreSpinner.isEnabled = true
             }
-            updateButton.isEnabled = presenter.onSpinnersUpdated(posUpdate)
+            updateButton.isEnabled = presenter.isUpdateable(posUpdate)
         }
 
         updateButton.setOnClickListener {
@@ -177,5 +145,27 @@ class SeriesPageController(args: Bundle?) : Controller(args) {
             progSpinner.isEnabled = scoreSpinner.isEnabled &&
                     status.listStatus != ListStatus.COMPLETED
         }
+    }
+
+    override fun onItemsNext(series: Anime, status: Record?) {
+        if (isAttached) {
+            Picasso.with(activity)
+                    .loadAndCropInto(series.imageUrl, view.series_detail_image)
+            characterAdapter.clearItems()
+            characterAdapter.addItems(series.characters ?: emptyList())
+            descriptionTextView.text = series.description?.replace("<br>", "")
+            titleTextView.text = series.titleEnglish
+            onFavouriteChanged(series.favourite ?: false)
+            initSpinners(series, status)
+            setSpinnersSelected(status)
+        }
+    }
+
+    override fun onItemUpdateableChanged(canUpdate: Boolean) {
+        view.series_detail_update_button.isEnabled = false
+    }
+
+    override fun onFavouriteChanged(favourite: Boolean) {
+        favFab.setImageResource(if (favourite) R.drawable.ic_menu_favourited else R.drawable.ic_menu_unfavourited)
     }
 }
