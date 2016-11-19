@@ -1,10 +1,12 @@
 package com.eriktrinh.ikuzo.data.ani
 
+import com.eriktrinh.ikuzo.data.enums.AiringStatus
+import com.eriktrinh.ikuzo.data.enums.Type
 import com.google.gson.annotations.SerializedName
 
 data class Anime(val id: Int,
                  @SerializedName("series_type") val seriesType: String,
-                 @SerializedName("title_romanji") val titleRomanji: String,
+                 @SerializedName("title_romaji") val titleRomaji: String,
                  @SerializedName("title_english") val titleEnglish: String,
                  @SerializedName("title_japanese") val titleJapanese: String,
                  val type: String,
@@ -17,7 +19,7 @@ data class Anime(val id: Int,
                  val popularity: Int,
                  @SerializedName("image_url_lge") val imageUrl: String,
                  @SerializedName("total_episodes") val totalEpisodes: Int,
-                 @SerializedName("airing_status") val airingStatus: String?,
+                 @SerializedName("airing_status") val airingStatus: AiringStatus,
                  val tags: List<Tag>,
         // Full model extras:
                  val description: String?,

@@ -18,6 +18,9 @@ import kotlinx.android.synthetic.main.controller_series_view.view.*
 import kotlinx.android.synthetic.main.list_item_series_view.view.*
 
 class SeriesController : Controller(), BrowseDialogFragment.Delegate {
+    override fun onOKPressed(request: QueryRequest) {
+        presenter.newRequest(request)
+    }
 
     companion object {
         private val TAG = "SeriesController"
@@ -50,13 +53,35 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
         presenter.onDestroy()
     }
 
-    fun onItemsNext(items: List<Anime>) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.controller_series_view, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_item_query_series -> {
+                val dialog = BrowseDialogFragment.newInstance()
+                dialog.setDelegate(this)
+                dialog.show((activity as AppCompatActivity).supportFragmentManager, BROWSER)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun onNewItems(items: List<Anime>) {
+        adapter.clearItems()
+        adapter.addItems(items)
+    }
+
+    fun onNextItems(items: List<Anime>) {
         adapter.addItems(items)
     }
 
     inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val imageView = itemView.series_image
-        private val englishTitleText = itemView.series_english_name
+        private val titleText = itemView.series_name
         private val statusText = itemView.series_status
         private val topLeftText = itemView.series_left_text
         private val topCenterText = itemView.series_center_text
@@ -72,7 +97,7 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             this.anime = anime
             Picasso.with(activity)
                     .loadAndCropInto(anime.imageUrl, imageView)
-            englishTitleText.text = anime.titleEnglish
+            titleText.text = anime.titleRomaji
             statusText.text = anime.formatStatusText()
             topLeftText.text = anime.formatLeftText()
             topCenterText.text = anime.formatCenterText()
@@ -132,7 +157,7 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
     }
 
     private fun Anime.formatLeftText(): String {
-        return "$type ($totalEpisodes eps)"
+        return "${type.string} ($totalEpisodes eps)"
     }
 
     private fun Anime.formatCenterText(): String {
@@ -151,6 +176,6 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             if (endDate != null) "${CalendarUtils.monthToShortForm[(endDate / 100) % 100]} ${endDate / 10000}" else ""
             })"
         }
-        return "$airingStatus$dateString"
+        return "${airingStatus.string.toLowerCase()}$dateString"
     }
 }

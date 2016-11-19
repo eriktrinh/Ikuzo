@@ -4,6 +4,17 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_vertical_margin">
 
+    <com.jaredrummler.materialspinner.MaterialSpinner
+        android:id="@+id/browse_year_spinner"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        app:ms_dropdown_height="200dp"
+        app:ms_dropdown_max_height="200dp"
+        tools:text="2017" />
+
     <TextView
         android:id="@+id/browse_year_text"
         android:layout_width="wrap_content"
@@ -13,11 +24,15 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:text="@string/browse_year" />
 
-    <Spinner
-        android:id="@+id/browse_year_spinner"
-        android:layout_width="wrap_content"
+    <com.jaredrummler.materialspinner.MaterialSpinner
+        android:id="@+id/browse_season_spinner"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/browse_year_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/browse_year_spinner"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        tools:text="Summer" />
 
     <TextView
         android:id="@+id/browse_season_text"
@@ -28,12 +43,15 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:text="@string/browse_season" />
 
-    <Spinner
-        android:id="@+id/browse_season_spinner"
-        android:layout_width="wrap_content"
+    <com.jaredrummler.materialspinner.MaterialSpinner
+        android:id="@+id/browse_status_spinner"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/browse_year_spinner"
-        android:layout_toEndOf="@id/browse_season_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/browse_season_spinner"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        tools:text="Currently Airing" />
 
     <TextView
         android:id="@+id/browse_status_text"
@@ -44,12 +62,15 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:text="@string/browse_status" />
 
-    <Spinner
-        android:id="@+id/browse_status_spinner"
-        android:layout_width="wrap_content"
+    <com.jaredrummler.materialspinner.MaterialSpinner
+        android:id="@+id/browse_type_spinner"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/browse_season_spinner"
-        android:layout_toEndOf="@id/browse_status_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/browse_status_spinner"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        tools:text="Special" />
 
     <TextView
         android:id="@+id/browse_type_text"
@@ -60,12 +81,15 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:text="@string/browse_type" />
 
-    <Spinner
-        android:id="@+id/browse_type_spinner"
-        android:layout_width="wrap_content"
+    <com.jaredrummler.materialspinner.MaterialSpinner
+        android:id="@+id/browse_sort_spinner"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/browse_status_spinner"
-        android:layout_toEndOf="@id/browse_type_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/browse_type_spinner"
+        android:layout_marginBottom="16dp"
+        android:elevation="2dp"
+        tools:text="" />
 
     <TextView
         android:id="@+id/browse_sort_text"
@@ -80,8 +104,9 @@
         android:id="@+id/browse_sort_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/browse_type_spinner"
-        android:layout_toEndOf="@id/browse_sort_text" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/browse_sort_spinner"
+        android:checked="true" />
 
     <TextView
         android:id="@+id/browse_desc_text"

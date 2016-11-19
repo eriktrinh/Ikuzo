@@ -115,6 +115,7 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
                 posUpdate.episodesWatched = series.totalEpisodes
                 progSpinner.selectedIndex = series.totalEpisodes
                 progSpinner.isEnabled = false
+                scoreSpinner.isEnabled = true
             } else if (listStatus == ListStatus.NONE || listStatus == ListStatus.PLAN_TO_WATCH) {
                 posUpdate.episodesWatched = 0
                 progSpinner.selectedIndex = 0
@@ -147,14 +148,14 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
         }
     }
 
-    override fun onItemsNext(series: Anime, status: Record?) {
+    override fun onNewItem(series: Anime, status: Record?) {
         if (isAttached) {
             Picasso.with(activity)
                     .loadAndCropInto(series.imageUrl, view.series_detail_image)
             characterAdapter.clearItems()
             characterAdapter.addItems(series.characters ?: emptyList())
             descriptionTextView.text = series.description?.replace("<br>", "")
-            titleTextView.text = series.titleEnglish
+            titleTextView.text = series.titleRomaji
             onFavouriteChanged(series.favourite ?: false)
             initSpinners(series, status)
             setSpinnersSelected(status)
