@@ -1,9 +1,10 @@
 package com.eriktrinh.ikuzo.data.enums
 
-enum class Sort(val string: String) {
-    ID("id"),
-    SCORE("score"),
-    POPULARITY("popularity"),
-    START_DATE("start_date"),
-    END_DATE("end_date")
+enum class Sort(val string: String,
+                val display: String) {
+    SCORE("score", "Score"),
+    POPULARITY("popularity", "Popularity"),
+    START_DATE("start_date", "Start Date"),
+    END_DATE("end_date", "End Date"),
+    ID("id", "Date Added")
 }

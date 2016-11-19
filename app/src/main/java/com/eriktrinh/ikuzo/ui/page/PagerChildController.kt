@@ -16,7 +16,7 @@ abstract class PagerChildController(args: Bundle?) : Controller(args) {
         return presenter
     }
 
-    abstract fun onItemsNext(series: Anime, status: Record?)
+    abstract fun onNewItem(series: Anime, status: Record?)
     abstract fun onItemUpdateableChanged(canUpdate: Boolean)
     abstract fun onFavouriteChanged(favourite: Boolean)
 }

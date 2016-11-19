@@ -2,6 +2,7 @@ package com.eriktrinh.ikuzo.ui.browse
 
 import android.content.Context
 import com.eriktrinh.ikuzo.data.ani.Anime
+import com.eriktrinh.ikuzo.utils.ext.browseAnime
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.eriktrinh.ikuzo.web.service.SeriesService
 import retrofit2.Call
@@ -15,7 +16,27 @@ class SeriesPresenter(context: Context) {
 
     init {
         seriesService = ServiceGenerator.createService(SeriesService::class.java, context)
-        val call = seriesService.browseAnime()
+        newRequest(QueryRequest.DEFAULT)
+    }
+
+    fun takeController(controller: SeriesController): SeriesPresenter {
+        this.controller = controller
+        publish()
+        return this
+    }
+
+    fun publish() {
+        if (controller != null) {
+            controller?.onNewItems(series)
+        }
+    }
+
+    fun onDestroy() {
+        controller = null
+    }
+
+    fun newRequest(request: QueryRequest) {
+        val call = seriesService.browseAnime(request)
         call.enqueue(object : Callback<List<Anime>> {
             override fun onFailure(call: Call<List<Anime>>, t: Throwable?) {
                 throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -30,21 +51,5 @@ class SeriesPresenter(context: Context) {
                 }
             }
         })
-    }
-
-    fun takeController(controller: SeriesController): SeriesPresenter {
-        this.controller = controller
-        publish()
-        return this
-    }
-
-    fun publish() {
-        if (controller != null) {
-            controller?.onItemsNext(series)
-        }
-    }
-
-    fun onDestroy() {
-        controller = null
     }
 }

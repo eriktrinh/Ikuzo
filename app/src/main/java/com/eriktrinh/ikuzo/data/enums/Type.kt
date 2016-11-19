@@ -1,10 +1,13 @@
 package com.eriktrinh.ikuzo.data.enums
 
+import com.google.gson.annotations.SerializedName
+
 enum class Type(val string: String) {
+    NONE(""),
     TV("TV"),
-    MOVIE("Movie"),
-    SPECIAL("Special"),
-    OVA("TV"),
-    ONA("TV"),
-    TV_SHORT("TV Short")
+    @SerializedName("Movie") MOVIE("Movie"),
+    @SerializedName("Special") SPECIAL("Special"),
+    OVA("OVA"),
+    ONA("ONA"),
+    @SerializedName("TV Short") TV_SHORT("TV Short")
 }

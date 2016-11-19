@@ -9,7 +9,6 @@ import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.data.ani.Airing
 import com.eriktrinh.ikuzo.data.ani.Anime
-import com.eriktrinh.ikuzo.ui.BrowseDialogFragment
 import com.eriktrinh.ikuzo.ui.SpacingItemDecoration
 import com.eriktrinh.ikuzo.ui.page.SeriesPageActivity
 import com.eriktrinh.ikuzo.utils.CalendarUtils
@@ -19,8 +18,8 @@ import kotlinx.android.synthetic.main.controller_series_view.view.*
 import kotlinx.android.synthetic.main.list_item_series_view.view.*
 
 class SeriesController : Controller(), BrowseDialogFragment.Delegate {
-    override fun onOKPressed() {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onOKPressed(request: QueryRequest) {
+        presenter.newRequest(request)
     }
 
     companion object {
@@ -60,9 +59,10 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menu_item_query_series -> {
                 val dialog = BrowseDialogFragment.newInstance()
+                dialog.setDelegate(this)
                 dialog.show((activity as AppCompatActivity).supportFragmentManager, BROWSER)
                 return true
             }
@@ -70,13 +70,18 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
         }
     }
 
-    fun onItemsNext(items: List<Anime>) {
+    fun onNewItems(items: List<Anime>) {
+        adapter.clearItems()
+        adapter.addItems(items)
+    }
+
+    fun onNextItems(items: List<Anime>) {
         adapter.addItems(items)
     }
 
     inner private class SeriesHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         private val imageView = itemView.series_image
-        private val englishTitleText = itemView.series_english_name
+        private val titleText = itemView.series_name
         private val statusText = itemView.series_status
         private val topLeftText = itemView.series_left_text
         private val topCenterText = itemView.series_center_text
@@ -92,7 +97,7 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             this.anime = anime
             Picasso.with(activity)
                     .loadAndCropInto(anime.imageUrl, imageView)
-            englishTitleText.text = anime.titleEnglish
+            titleText.text = anime.titleRomaji
             statusText.text = anime.formatStatusText()
             topLeftText.text = anime.formatLeftText()
             topCenterText.text = anime.formatCenterText()
@@ -152,7 +157,7 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
     }
 
     private fun Anime.formatLeftText(): String {
-        return "$type ($totalEpisodes eps)"
+        return "${type.string} ($totalEpisodes eps)"
     }
 
     private fun Anime.formatCenterText(): String {
@@ -171,6 +176,6 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             if (endDate != null) "${CalendarUtils.monthToShortForm[(endDate / 100) % 100]} ${endDate / 10000}" else ""
             })"
         }
-        return "$airingStatus$dateString"
+        return "${airingStatus.string.toLowerCase()}$dateString"
     }
 }

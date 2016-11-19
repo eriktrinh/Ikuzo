@@ -8,7 +8,7 @@
     <string name="username_prompt">User:</string>
     <string name="password_prompt">Password:</string>
     <string name="login">Login</string>
-    <string name="title_activity_series_detail">SeriesDetailActivity</string>
+    <string name="title_activity_series_page">SeriesPageActivity</string>
     <string name="character_title">Characters</string>
     <string name="description_title">Description</string>
     <string name="browse_title">Browse</string>
@@ -18,7 +18,6 @@
     <string name="browse_type">Type</string>
     <string name="browse_status">Status</string>
     <string name="browse_desc">Descending</string>
-    <string name="title_activity_series_page">SeriesPageActivity</string>
     <string name="staff_title">Staff</string>
     <string name="update_title">Update</string>
     <string name="fav_title">Favourite</string>

@@ -29,7 +29,7 @@
             android:background="@color/cardview_shadow_start_color" />
 
         <TextView
-            android:id="@+id/series_english_name"
+            android:id="@+id/series_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/series_image"
@@ -39,7 +39,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:gravity="center_horizontal"
             android:textSize="24sp"
-            tools:text="English Name" />
+            tools:text="Series Name" />
 
         <TextView
             android:id="@+id/series_left_text"

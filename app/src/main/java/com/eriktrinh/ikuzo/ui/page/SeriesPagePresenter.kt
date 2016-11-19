@@ -79,13 +79,13 @@ class SeriesPagePresenter(context: Context, id: Int) {
 
     fun publish(controller: PagerChildController) {
         if (series != null) {
-            controller.onItemsNext(series!!, userStatus)
+            controller.onNewItem(series!!, userStatus)
         }
     }
 
     fun publish() {
         if (series != null)
-            controllers.forEach { it.onItemsNext(series!!, userStatus) }
+            controllers.forEach { it.onNewItem(series!!, userStatus) }
     }
 
     fun onDestroy() {

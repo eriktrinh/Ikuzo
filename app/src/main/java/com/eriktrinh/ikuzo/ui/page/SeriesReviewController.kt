@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.controller_series_reviews.view.*
 
 /**
  *  TODO:
- *  - Display the initial reviews (in a list)
  *  - 'Load More' button at the bottom of the list
  *  - FAB to write a review (implemented later)
  *  - click on reviewers profile, vote on review (later)
@@ -59,7 +58,7 @@ class SeriesReviewController(args: Bundle?) : PagerChildController(args) {
         super.onDestroy()
     }
 
-    override fun onItemsNext(series: Anime, status: Record?) {
+    override fun onNewItem(series: Anime, status: Record?) {
         if (isAttached) {
             reviewAdapter.clearItems()
             reviewAdapter.addItems(series.reviews ?: emptyList())
