@@ -1,4 +1,4 @@
-package com.eriktrinh.ikuzo.enums
+package com.eriktrinh.ikuzo.data.enums
 
 enum class Sort(val string: String,
                 val display: String) {

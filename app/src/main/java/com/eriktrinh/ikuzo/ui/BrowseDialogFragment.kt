@@ -8,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
 import com.eriktrinh.ikuzo.R
-import com.eriktrinh.ikuzo.enums.Season
-import com.eriktrinh.ikuzo.enums.Sort
-import com.eriktrinh.ikuzo.ext.getYear
+import com.eriktrinh.ikuzo.data.enums.Season
+import com.eriktrinh.ikuzo.data.enums.Sort
+import com.eriktrinh.ikuzo.utils.ext.getYear
 import kotlinx.android.synthetic.main.dialog_browse.view.*
 import java.util.*
 
@@ -54,18 +54,18 @@ class BrowseDialogFragment : DialogFragment() {
         val years = Array(currYear - 1951) { (currYear - it).toString() }
         val yearAdapter = ArrayAdapter<String>(activity, spinnerItem, listOf("").plus(years))
         yearAdapter.setDropDownViewResource(spinnerDropdownItem)
-        view.browse_year_spinner.adapter = yearAdapter
+        view.browse_year_spinner.setAdapter(yearAdapter)
 //        view.browse_year_spinner.setSelection()
 
         val seasonAdapter = ArrayAdapter<String>(activity, spinnerItem, listOf("").plus(Season.values().map(Season::string)))
         seasonAdapter.setDropDownViewResource(spinnerDropdownItem)
         val seasonSpinner = view.browse_season_spinner
-        seasonSpinner.adapter = seasonAdapter
+        seasonSpinner.setAdapter(seasonAdapter)
 //        seasonSpinner.setSelection()
 
         val sortAdapter = ArrayAdapter<String>(activity, spinnerItem, Sort.values().map(Sort::string))
         sortAdapter.setDropDownViewResource(spinnerDropdownItem)
         val sortSpinner = view.browse_sort_spinner
-        sortSpinner.adapter = sortAdapter
+        sortSpinner.setAdapter(sortAdapter)
     }
 }

@@ -57,7 +57,7 @@ class SeriesPagePresenter(context: Context, id: Int) {
             override fun onResponse(call: Call<SeriesList>, response: Response<SeriesList>?) {
                 if (response != null && response.code() == 200) {
                     val body = response.body()
-                    userStatus = body.lists.getRecordById(id)
+                    userStatus = body!!.lists.getRecordById(id)
                     if (oneDone) publish() else {
                         oneDone = true
                     }
@@ -129,7 +129,7 @@ class SeriesPagePresenter(context: Context, id: Int) {
             call.enqueue(object : Callback<Favourite> {
                 override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
                     if (response != null && response.code() == 200) {
-                        controllers.forEach { it.onFavouriteChanged(response.body().order == null) }
+                        controllers.forEach { it.onFavouriteChanged(response.body()!!.order == null) }
                     } else {
                         Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
                                 .show()

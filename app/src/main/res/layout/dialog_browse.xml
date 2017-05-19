@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_vertical_margin">
@@ -99,14 +101,6 @@
         android:layout_below="@id/browse_type_spinner"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:text="@string/browse_sort" />
-
-    <Spinner
-        android:id="@+id/browse_sort_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/browse_sort_spinner"
-        android:checked="true" />
 
     <TextView
         android:id="@+id/browse_desc_text"

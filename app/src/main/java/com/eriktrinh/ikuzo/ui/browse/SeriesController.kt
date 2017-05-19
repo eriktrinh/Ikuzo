@@ -157,7 +157,7 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
     }
 
     private fun Anime.formatLeftText(): String {
-        return "${type.string} ($totalEpisodes eps)"
+        return "$type ($totalEpisodes eps)"
     }
 
     private fun Anime.formatCenterText(): String {

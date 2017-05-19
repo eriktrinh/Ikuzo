@@ -17,7 +17,7 @@ class TokenAuthenticator(val context: Context) : Authenticator {
             val refreshCall: Call<Tokens> = ServiceGenerator.createService(AuthService::class.java).accessTokenByRefresh(refreshToken)
             val refreshResponse = refreshCall.execute()
             if (refreshResponse.raw().code() == 200) {
-                val accessToken = "Bearer ${refreshResponse.body().accessToken?.trim()}"
+                val accessToken = "Bearer ${refreshResponse.body()!!.accessToken?.trim()}"
                 AuthUtils.setAccessToken(context, accessToken)
 
                 return response.request().newBuilder()
