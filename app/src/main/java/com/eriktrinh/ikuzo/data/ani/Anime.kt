@@ -1,7 +1,7 @@
 package com.eriktrinh.ikuzo.data.ani
 
 import com.eriktrinh.ikuzo.data.enums.AiringStatus
-import com.eriktrinh.ikuzo.data.enums.Type
+import com.eriktrinh.ikuzo.utils.CalendarUtils
 import com.google.gson.annotations.SerializedName
 
 data class Anime(val id: Int,
@@ -35,4 +35,27 @@ data class Anime(val id: Int,
                  val externalLinks: List<ExternalLink>?,
                  val reviews: List<Review>?,
                  @SerializedName("youtube_id") val youtubeId: String?
-)
+) {
+    fun formatLeftText(): String {
+        return "$type ($totalEpisodes eps)"
+    }
+
+    fun formatCenterText(): String {
+        return "$averageScore%"
+    }
+
+    fun formatRightText(): String {
+        return "$popularity"
+    }
+
+    fun formatStatusText(): String {
+        val dateString = if (startDate == null) "" else {
+            val startYear = startDate / 10000
+            val startMonth = CalendarUtils.monthToShortForm[(startDate / 100) % 100]
+            " ($startMonth $startYear - ${
+            if (endDate != null) "${CalendarUtils.monthToShortForm[(endDate / 100) % 100]} ${endDate / 10000}" else ""
+            })"
+        }
+        return "${airingStatus.string.toLowerCase()}$dateString"
+    }
+}

@@ -58,8 +58,14 @@ class BrowseDialogFragment : DialogFragment() {
         return AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(R.string.browse_title)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
+                .setPositiveButton(android.R.string.ok) {
+                    dialog, _ ->
                     delegate?.onOKPressed(getRequest())
+                    dialog.dismiss()
+                }
+                .setNegativeButton(android.R.string.cancel) {
+                    dialog, _ ->
+                    dialog.cancel()
                 }
                 .create()
     }

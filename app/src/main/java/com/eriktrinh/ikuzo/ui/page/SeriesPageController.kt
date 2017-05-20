@@ -100,15 +100,15 @@ class SeriesPageController(args: Bundle?) : PagerChildController(args) {
         val statuses = ListStatus.values().map { it.string }
         statusSpinner.setItems(statuses)
 
-        progSpinner.setOnItemSelectedListener { view, position, id, item ->
+        progSpinner.setOnItemSelectedListener { _, position, _, _ ->
             posUpdate.episodesWatched = position
             updateButton.isEnabled = presenter.isUpdateable(posUpdate)
         }
-        scoreSpinner.setOnItemSelectedListener { view, position, id, item ->
+        scoreSpinner.setOnItemSelectedListener { _, position, _, _ ->
             posUpdate.score = position
             updateButton.isEnabled = presenter.isUpdateable(posUpdate)
         }
-        statusSpinner.setOnItemSelectedListener { view, position, id, item ->
+        statusSpinner.setOnItemSelectedListener { _, position, _, _ ->
             val listStatus = ListStatus.values()[position]
             posUpdate.listStatus = listStatus
             if (listStatus == ListStatus.COMPLETED) {

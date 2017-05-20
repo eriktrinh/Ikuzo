@@ -15,6 +15,7 @@ import com.eriktrinh.ikuzo.web.service.SeriesService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.combineLatest
 import okhttp3.ResponseBody
+import retrofit2.HttpException
 import java.util.*
 
 class SeriesPagePresenter(context: Context, id: Int) {
@@ -33,11 +34,15 @@ class SeriesPagePresenter(context: Context, id: Int) {
         val statusCall = listService.getList(MeUtils.getMyId(context) ?: -1) // TODO make call and store response on app open/write on update
         pageCall.combineLatest(statusCall)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { (anime, seriesList) ->
+                .subscribe({ (anime, seriesList) ->
                     series = anime
                     userStatus = seriesList.lists.getRecordById(id)
                     publish()
-                }
+                }, { e: Throwable ->
+                    if (e is HttpException) {
+                        Toast.makeText(context, e.response().code(), Toast.LENGTH_LONG).show()
+                    }
+                })
     }
 
     fun takeController(controller: PagerChildController): SeriesPagePresenter {
@@ -82,7 +87,7 @@ class SeriesPagePresenter(context: Context, id: Int) {
                     if (update.listStatus == userStatus?.listStatus) null else update.listStatus
             )
             listService.putListEntry(editList).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(successCallback)
+                    .subscribe(successCallback, { throw UnsupportedOperationException("not implemented") })
         }
     }
 

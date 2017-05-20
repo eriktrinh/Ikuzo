@@ -17,7 +17,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.ui.auth.LoginActivity
 import com.eriktrinh.ikuzo.ui.auth.UnauthenticatedController
-import com.eriktrinh.ikuzo.ui.browse.SeriesController
+import com.eriktrinh.ikuzo.ui.browse.BrowseResultsController
 import com.eriktrinh.ikuzo.utils.ext.loadAndCenterInto
 import com.eriktrinh.ikuzo.utils.shared_pref.AuthUtils
 import com.eriktrinh.ikuzo.utils.shared_pref.MeUtils
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(),
         if (imageUrl != null) loadUserImage(imageUrl)
         setNavHeaderTitle(MeUtils.getMyDisplayName(this) ?: "Login")
 
-        router.setRoot(RouterTransaction.with(SeriesController()))
+        router.setRoot(RouterTransaction.with(BrowseResultsController()))
         drawer_layout.nav_view.setCheckedItem(R.id.nav_browse)
         if (!AuthUtils.isAuthorized(this)) {
             showUnauthenticatedScreen()
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(),
         when (item.itemId) {
             R.id.nav_browse -> {
                 if (!item.isChecked) {
-                    router.setRoot(RouterTransaction.with(SeriesController()))
+                    router.setRoot(RouterTransaction.with(BrowseResultsController()))
                 }
             }
             R.id.nav_slideshow -> {
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity(),
         when (requestCode) {
             REQUEST_LOGIN -> {
                 Log.i(TAG, "LoginActivity OK")
-                router.setRoot(RouterTransaction.with(SeriesController()))
+                router.setRoot(RouterTransaction.with(BrowseResultsController()))
                 AuthUtils.setMe(this, { reinitHeaderAndControllers() }, { AuthUtils.clearPreferences(this); showUnauthenticatedScreen(); showLogin() })
             }
         }

@@ -1,39 +1,33 @@
-package com.eriktrinh.ikuzo.ui.browse
+package com.eriktrinh.ikuzo.ui.lists
 
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
-import com.eriktrinh.ikuzo.data.ani.Airing
 import com.eriktrinh.ikuzo.data.ani.Anime
 import com.eriktrinh.ikuzo.ui.SpacingItemDecoration
 import com.eriktrinh.ikuzo.ui.page.SeriesPageActivity
-import com.eriktrinh.ikuzo.utils.CalendarUtils
 import com.eriktrinh.ikuzo.utils.ext.loadAndCropInto
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.controller_series_view.view.*
 import kotlinx.android.synthetic.main.list_item_series_view.view.*
 
-class SeriesController : Controller(), BrowseDialogFragment.Delegate {
-    override fun onOKPressed(request: QueryRequest) {
-        presenter.newRequest(request)
-    }
+
+abstract class SeriesController : Controller() {
 
     companion object {
         private val TAG = "SeriesController"
-        private val BROWSER = "SeriesController.BrowseDialog"
     }
 
     private lateinit var adapter: SeriesAdapter
-    private lateinit var presenter: SeriesPresenter
+    protected lateinit var presenter: SeriesPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_series_view, container, false)
-
-        setHasOptionsMenu(true)
 
         val recyclerView = view.controller_series_recycler_view
         val layoutManager = LinearLayoutManager(activity)
@@ -43,31 +37,12 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.design_card_margin)))
 
-        presenter = SeriesPresenter(activity)
-                .takeController(this)
         return view
     }
 
     override fun onDestroy() {
         super.onDestroy()
         presenter.onDestroy()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.controller_series_view, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_item_query_series -> {
-                val dialog = BrowseDialogFragment.newInstance()
-                dialog.setDelegate(this)
-                dialog.show((activity as AppCompatActivity).supportFragmentManager, BROWSER)
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
     }
 
     fun onNewItems(items: List<Anime>) {
@@ -131,9 +106,9 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
         fun addItems(items: List<Anime>) {
             val oldSize = series.size
             series = series.plus(items)
-            for (i in 0..items.size - 1) {
+            items.forEach {
                 Picasso.with(activity)
-                        .load(items[i].imageUrl)
+                        .load(it.imageUrl)
                         .fetch()
             }
             notifyItemRangeInserted(oldSize, items.size)
@@ -144,38 +119,5 @@ class SeriesController : Controller(), BrowseDialogFragment.Delegate {
             notifyItemRangeRemoved(0, oldSize)
             series = emptyList()
         }
-    }
-
-    private fun Airing.formatCountdown(): String {
-        val minutes = (countdown / 60) % 60
-        val hours = (countdown / (60 * 60)) % 24
-        val days = (countdown / (60 * 60)) / 24
-        return "Ep $nextEpisode in" +
-                (if (days != 0) " ${days}d" else "") +
-                (if (hours != 0) " ${hours}h" else "") +
-                " ${minutes}m"
-    }
-
-    private fun Anime.formatLeftText(): String {
-        return "$type ($totalEpisodes eps)"
-    }
-
-    private fun Anime.formatCenterText(): String {
-        return "$averageScore%"
-    }
-
-    private fun Anime.formatRightText(): String {
-        return "$popularity"
-    }
-
-    private fun Anime.formatStatusText(): String {
-        val dateString = if (startDate == null) "" else {
-            val startYear = startDate / 10000
-            val startMonth = CalendarUtils.monthToShortForm[(startDate / 100) % 100]
-            " ($startMonth $startYear - ${
-            if (endDate != null) "${CalendarUtils.monthToShortForm[(endDate / 100) % 100]} ${endDate / 10000}" else ""
-            })"
-        }
-        return "${airingStatus.string.toLowerCase()}$dateString"
     }
 }

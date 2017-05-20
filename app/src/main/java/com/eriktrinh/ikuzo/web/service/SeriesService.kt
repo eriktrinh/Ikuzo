@@ -21,4 +21,7 @@ interface SeriesService {
 
     @POST("anime/favourite")
     fun favAnime(@Body id: Id): Observable<Favourite>
+
+    @GET("anime/search/{query}")
+    fun search(@Path("query") query: String): Observable<List<Anime>>
 }

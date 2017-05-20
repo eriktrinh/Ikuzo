@@ -27,4 +27,10 @@
     <string name="reviews_title">Reviews</string>
     <string name="expand">More</string>
     <string name="collapse">Less</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Anime…</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

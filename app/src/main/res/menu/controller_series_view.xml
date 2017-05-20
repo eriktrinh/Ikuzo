@@ -6,4 +6,10 @@
         android:icon="@drawable/ic_menu_browse"
         android:title="@string/browse_title"
         app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/menu_item_search_series"
+        android:icon="@drawable/ic_menu_search"
+        android:title="@string/search_title"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom|withText" />
 </menu>

@@ -17,7 +17,7 @@ object MeUtils {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putInt(KEY_USER_ID, id ?: -1)
-                .commit()
+                .apply()
     }
 
     @JvmStatic fun getMyDisplayName(context: Context): String? {
@@ -29,7 +29,7 @@ object MeUtils {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putString(KEY_DISPLAY_NAME, name)
-                .commit()
+                .apply()
     }
 
     @JvmStatic fun getMyImageUrl(context: Context): String? {
@@ -41,6 +41,6 @@ object MeUtils {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putString(KEY_USER_IMAGE, name)
-                .commit()
+                .apply()
     }
 }
