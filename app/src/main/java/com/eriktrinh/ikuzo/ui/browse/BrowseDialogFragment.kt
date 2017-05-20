@@ -11,6 +11,7 @@ import com.eriktrinh.ikuzo.data.enums.AiringStatus
 import com.eriktrinh.ikuzo.data.enums.Season
 import com.eriktrinh.ikuzo.data.enums.Sort
 import com.eriktrinh.ikuzo.data.enums.Type
+import com.eriktrinh.ikuzo.utils.ext.getSeason
 import com.eriktrinh.ikuzo.utils.ext.getYear
 import com.jaredrummler.materialspinner.MaterialSpinner
 import kotlinx.android.synthetic.main.dialog_browse.view.*
@@ -50,13 +51,14 @@ class BrowseDialogFragment : DialogFragment() {
         typeSpinner = view.browse_type_spinner
         sortSpinner = view.browse_sort_spinner
         descCheckbox = view.browse_desc_checkbox
+        descCheckbox.isChecked = true
 
         setSpinners()
 
         return AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle(R.string.browse_title)
-                .setPositiveButton(android.R.string.ok) { dialogInterface, i ->
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     delegate?.onOKPressed(getRequest())
                 }
                 .create()
@@ -77,9 +79,11 @@ class BrowseDialogFragment : DialogFragment() {
 
         val years = listOf("").plus(Array(currYear - firstYear) { (currYear - it).toString() })
         yearSpinner.setItems(years)
+        yearSpinner.selectedIndex = 1
 
         val seasons = Season.values().map(Season::string)
         seasonSpinner.setItems(seasons)
+        seasonSpinner.selectedIndex = Calendar.getInstance().getSeason().ordinal
 
         val statuses = AiringStatus.values().map(AiringStatus::string)
         statusSpinner.setItems(statuses)
@@ -89,5 +93,6 @@ class BrowseDialogFragment : DialogFragment() {
 
         val sortItems = Sort.values().map(Sort::display)
         sortSpinner.setItems(sortItems)
+        sortSpinner.selectedIndex = Sort.POPULARITY.ordinal
     }
 }

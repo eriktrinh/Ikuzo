@@ -12,13 +12,13 @@ import com.bluelinelabs.conductor.Controller
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.data.ani.Tokens
 import com.eriktrinh.ikuzo.web.ServiceGenerator
-import com.eriktrinh.ikuzo.web.callback.AuthCallbacks
+import com.eriktrinh.ikuzo.web.callback.AuthObserver
 import com.eriktrinh.ikuzo.web.service.AuthService
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.controller_login_view.view.*
-import retrofit2.Call
 
 class LoginController(args: Bundle?) : Controller(args) {
-
 
     companion object {
         private val KEY_URI = "ARGS_URI"
@@ -81,8 +81,10 @@ class LoginController(args: Bundle?) : Controller(args) {
     }
 
     private fun setTokens(code: String) {
+        val authObserver = AuthObserver(activity, activity as AuthObserver.Delegate)
         val authService: AuthService = ServiceGenerator.createService(AuthService::class.java)
-        val call: Call<Tokens> = authService.accessTokenByCode(code)
-        call.enqueue(AuthCallbacks(activity, activity as AuthCallbacks.Delegate))
+        val call: Observable<Tokens> = authService.accessTokenByCode(code)
+        call.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(authObserver)
     }
 }

@@ -3,7 +3,7 @@ package com.eriktrinh.ikuzo.web.service
 import com.eriktrinh.ikuzo.data.ani.Anime
 import com.eriktrinh.ikuzo.data.ani.Favourite
 import com.eriktrinh.ikuzo.data.payload.Id
-import retrofit2.Call
+import io.reactivex.Observable
 import retrofit2.http.*
 
 interface SeriesService {
@@ -14,11 +14,11 @@ interface SeriesService {
                     @Query("type") type: String?,
                     @Query("sort") sort: String,
                     @Query("page") page: Int = 1
-    ): Call<List<Anime>>
+    ): Observable<List<Anime>>
 
     @GET("anime/{id}/page")
-    fun getAnimePage(@Path("id") id: Int): Call<Anime>
+    fun getAnimePage(@Path("id") id: Int): Observable<Anime>
 
     @POST("anime/favourite")
-    fun favAnime(@Body id: Id): Call<Favourite>
+    fun favAnime(@Body id: Id): Observable<Favourite>
 }

@@ -1,7 +1,7 @@
 package com.eriktrinh.ikuzo.web.service
 
 import com.eriktrinh.ikuzo.data.ani.Tokens
-import retrofit2.Call
+import io.reactivex.Observable
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -17,11 +17,11 @@ interface AuthService {
             "client_id=${CLIENT_ID}&" +
             "client_secret=${CLIENT_SECRET}&" +
             "redirect_uri=${REDIRECT_URI}")
-    fun accessTokenByCode(@Query("code") code: String): Call<Tokens>
+    fun accessTokenByCode(@Query("code") code: String): Observable<Tokens>
 
     @POST("auth/access_token?" +
             "grant_type=refresh_token&" +
             "client_id=${CLIENT_ID}&" +
             "client_secret=${CLIENT_SECRET}")
-    fun accessTokenByRefresh(@Query("refresh_token") refreshToken: String): Call<Tokens>
+    fun accessTokenByRefresh(@Query("refresh_token") refreshToken: String): Observable<Tokens>
 }

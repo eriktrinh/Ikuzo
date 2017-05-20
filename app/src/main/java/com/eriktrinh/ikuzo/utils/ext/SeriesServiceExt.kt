@@ -6,9 +6,9 @@ import com.eriktrinh.ikuzo.data.enums.Season
 import com.eriktrinh.ikuzo.data.enums.Type
 import com.eriktrinh.ikuzo.ui.browse.QueryRequest
 import com.eriktrinh.ikuzo.web.service.SeriesService
-import retrofit2.Call
+import io.reactivex.Observable
 
-fun SeriesService.browseAnime(request: QueryRequest, page: Int = 1): Call<List<Anime>> {
+fun SeriesService.browseAnime(request: QueryRequest, page: Int = 1): Observable<List<Anime>> {
     return this.browseAnime(
             request.year,
             if (request.season == Season.NONE) null else request.season.string,

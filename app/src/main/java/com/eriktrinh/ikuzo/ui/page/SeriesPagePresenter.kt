@@ -2,12 +2,9 @@ package com.eriktrinh.ikuzo.ui.page
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.eriktrinh.ikuzo.data.ani.Anime
-import com.eriktrinh.ikuzo.data.ani.Favourite
 import com.eriktrinh.ikuzo.data.ani.Record
-import com.eriktrinh.ikuzo.data.ani.SeriesList
 import com.eriktrinh.ikuzo.data.enums.ListStatus
 import com.eriktrinh.ikuzo.data.payload.EditList
 import com.eriktrinh.ikuzo.data.payload.Id
@@ -15,10 +12,9 @@ import com.eriktrinh.ikuzo.utils.shared_pref.MeUtils
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.eriktrinh.ikuzo.web.service.ListService
 import com.eriktrinh.ikuzo.web.service.SeriesService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.combineLatest
 import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class SeriesPagePresenter(context: Context, id: Int) {
@@ -27,47 +23,21 @@ class SeriesPagePresenter(context: Context, id: Int) {
     }
 
     private var controllers: MutableList<PagerChildController> = ArrayList()
-    private val seriesService: SeriesService
-    private val listService: ListService
+    private val seriesService: SeriesService = ServiceGenerator.createService(SeriesService::class.java, context)
+    private val listService: ListService = ServiceGenerator.createService(ListService::class.java, context)
     private var series: Anime? = null
     private var userStatus: Record? = null
-    private var oneDone = false
 
     init {
-        seriesService = ServiceGenerator.createService(SeriesService::class.java, context)
-        listService = ServiceGenerator.createService(ListService::class.java, context)
         val pageCall = seriesService.getAnimePage(id)
         val statusCall = listService.getList(MeUtils.getMyId(context) ?: -1) // TODO make call and store response on app open/write on update
-        pageCall.enqueue(object : Callback<Anime> {
-            override fun onResponse(call: Call<Anime>, response: Response<Anime>?) {
-                if (response != null && response.code() == 200) {
-                    series = response.body()
-                    Log.i(TAG, "Got: $series")
-                    if (oneDone) publish() else {
-                        oneDone = true
-                    }
+        pageCall.combineLatest(statusCall)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { (anime, seriesList) ->
+                    series = anime
+                    userStatus = seriesList.lists.getRecordById(id)
+                    publish()
                 }
-            }
-
-            override fun onFailure(call: Call<Anime>?, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-        statusCall.enqueue(object : Callback<SeriesList> {
-            override fun onResponse(call: Call<SeriesList>, response: Response<SeriesList>?) {
-                if (response != null && response.code() == 200) {
-                    val body = response.body()
-                    userStatus = body!!.lists.getRecordById(id)
-                    if (oneDone) publish() else {
-                        oneDone = true
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<SeriesList>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
     }
 
     fun takeController(controller: PagerChildController): SeriesPagePresenter {
@@ -97,49 +67,37 @@ class SeriesPagePresenter(context: Context, id: Int) {
     }
 
     fun onUpdateButtonClicked(update: Record) {
-        val updateCallback = object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>?) {
-                if (response != null && response.code() == 200) {
-                    userStatus = update
-                    controllers.forEach { it.onItemUpdateableChanged(false) }
-                    return
-                }
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+        val successCallback: (ResponseBody) -> Unit = {
+            userStatus = update
+            controllers.forEach { controller -> controller.onItemUpdateableChanged(false) }
         }
         if (update.listStatus == ListStatus.NONE) {
-            listService.delListEntry(series?.id ?: -1).enqueue(updateCallback)
+            listService.delListEntry(series?.id ?: -1)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(successCallback)
         } else {
             val editList = EditList(series?.id ?: -1,
                     if (update.score == userStatus?.score) null else update.score,
                     if (update.episodesWatched == userStatus?.episodesWatched) null else update.episodesWatched,
                     if (update.listStatus == userStatus?.listStatus) null else update.listStatus
             )
-            listService.putListEntry(editList).enqueue(updateCallback)
+            listService.putListEntry(editList).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(successCallback)
         }
     }
 
     fun onFavouriteButtonClicked(activity: Activity) {
         if (series != null) {
             val call = seriesService.favAnime(Id(series!!.id))
-            call.enqueue(object : Callback<Favourite> {
-                override fun onResponse(call: Call<Favourite>, response: Response<Favourite>?) {
-                    if (response != null && response.code() == 200) {
-                        controllers.forEach { it.onFavouriteChanged(response.body()!!.order == null) }
-                    } else {
+            call.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        controllers.forEach { controller ->
+                            controller.onFavouriteChanged(it.order == null)
+                        }
+                    }, {
                         Toast.makeText(activity, "Could not update favourite", Toast.LENGTH_SHORT)
                                 .show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Favourite>, t: Throwable?) {
-                    throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
-            })
+                    })
         }
     }
 }

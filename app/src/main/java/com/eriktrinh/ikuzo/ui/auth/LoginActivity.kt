@@ -11,11 +11,11 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.eriktrinh.ikuzo.R
 import com.eriktrinh.ikuzo.web.ServiceGenerator
-import com.eriktrinh.ikuzo.web.callback.AuthCallbacks
+import com.eriktrinh.ikuzo.web.callback.AuthObserver
 import com.eriktrinh.ikuzo.web.service.AuthService
 import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginActivity : AppCompatActivity(), AuthCallbacks.Delegate {
+class LoginActivity : AppCompatActivity(), AuthObserver.Delegate {
     override fun onAuthenticationFailure() {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

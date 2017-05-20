@@ -4,27 +4,32 @@ import android.content.Context
 import android.util.Log
 import com.eriktrinh.ikuzo.data.ani.Tokens
 import com.eriktrinh.ikuzo.utils.shared_pref.AuthUtils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
 
-class AuthCallbacks(val context: Context, val delegate: Delegate) : Callback<Tokens> {
+class AuthObserver(val context: Context, val delegate: Delegate) : Observer<Tokens> {
 
     interface Delegate {
         fun onAuthenticated()
         fun onAuthenticationFailure()
     }
 
-    private val TAG = "AuthCallbacks"
+    private val TAG = "AuthObserver"
 
-    override fun onResponse(call: Call<Tokens>, response: Response<Tokens>?) {
-        val tokens: Tokens? = response?.body()
+    override fun onSubscribe(d: Disposable?) {
+    }
+
+    override fun onError(e: Throwable?) {
+        delegate.onAuthenticationFailure()
+    }
+
+    override fun onNext(tokens: Tokens?) {
         if (isValidTokenResponse(tokens)) {
             AuthUtils.setAccessToken(context, "Bearer ${tokens?.accessToken?.trim()}")
             Log.i(TAG, "Got access_token: ${tokens?.accessToken}")
 
             if (tokens?.refreshToken != null) {
-                AuthUtils.setRefreshToken(context, tokens?.refreshToken.trim())
+                AuthUtils.setRefreshToken(context, tokens.refreshToken.trim())
             }
             delegate.onAuthenticated()
         } else {
@@ -32,10 +37,8 @@ class AuthCallbacks(val context: Context, val delegate: Delegate) : Callback<Tok
         }
     }
 
-    override fun onFailure(call: Call<Tokens>, t: Throwable) {
-        delegate.onAuthenticationFailure()
+    override fun onComplete() {
     }
-
 
     private fun isValidTokenResponse(tokens: Tokens?): Boolean {
         return tokens != null &&

@@ -3,9 +3,11 @@ package com.eriktrinh.ikuzo.web
 import android.content.Context
 import android.util.Log
 import com.eriktrinh.ikuzo.utils.shared_pref.AuthUtils
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ServiceGenerator {
@@ -15,6 +17,7 @@ object ServiceGenerator {
     private val builder: Retrofit.Builder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
 
     fun <T> createService(serviceClass: Class<T>, context: Context): T {
         if (httpClient.interceptors().isEmpty()) {

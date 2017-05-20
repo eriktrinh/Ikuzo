@@ -5,17 +5,14 @@ import com.eriktrinh.ikuzo.data.ani.Anime
 import com.eriktrinh.ikuzo.utils.ext.browseAnime
 import com.eriktrinh.ikuzo.web.ServiceGenerator
 import com.eriktrinh.ikuzo.web.service.SeriesService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
 
 class SeriesPresenter(context: Context) {
     private var controller: SeriesController? = null
-    private val seriesService: SeriesService
+    private val seriesService: SeriesService = ServiceGenerator.createService(SeriesService::class.java, context)
     private var series: List<Anime> = emptyList()
 
     init {
-        seriesService = ServiceGenerator.createService(SeriesService::class.java, context)
         newRequest(QueryRequest.DEFAULT)
     }
 
@@ -37,19 +34,10 @@ class SeriesPresenter(context: Context) {
 
     fun newRequest(request: QueryRequest) {
         val call = seriesService.browseAnime(request)
-        call.enqueue(object : Callback<List<Anime>> {
-            override fun onFailure(call: Call<List<Anime>>, t: Throwable?) {
-                throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onResponse(call: Call<List<Anime>>, response: Response<List<Anime>>?) {
-                when (response?.raw()?.code() ?: 400) {
-                    200 -> {
-                        series = response?.body() ?: emptyList()
-                        publish()
-                    }
+        call.observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    series = it
+                    publish()
                 }
-            }
-        })
     }
 }
